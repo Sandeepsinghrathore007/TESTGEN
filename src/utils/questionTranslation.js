@@ -1,5 +1,3 @@
-import { generateTextFromAI } from '@/utils/aiClient'
-
 const DEVANAGARI_REGEX = /[\u0900-\u097F]/g
 const LATIN_REGEX = /[A-Za-z]/g
 const TRANSLATION_OUTPUT_MAX_TOKENS = 8192
@@ -336,74 +334,20 @@ function buildTranslationPayloadQuestion(question) {
 
 export async function translateQuestionBatch(questions, targetLanguage) {
   const normalizedTargetLanguage = normalizeQuestionLanguage(targetLanguage)
-  const languageLabel = normalizedTargetLanguage === 'hindi' ? 'Hindi' : 'English'
   const normalizedQuestions = Array.isArray(questions)
     ? questions.filter((question) => question && Array.isArray(question.options))
     : []
-  const translationPayload = normalizedQuestions.map((question) => buildTranslationPayloadQuestion(question))
 
   if (normalizedQuestions.length === 0) {
     return []
   }
-  const maxTokens = Math.min(
-    TRANSLATION_OUTPUT_MAX_TOKENS,
-    Math.max(900, normalizedQuestions.length * 280)
-  )
 
-  const generated = await generateTextFromAI({
-    systemPrompt: [
-      'You translate quiz questions for a study app in one batch.',
-      normalizedTargetLanguage === 'hindi'
-        ? 'Translate ONLY the question and options into Hindi.'
-        : `Translate ONLY the question and options into ${languageLabel}.`,
-      'STRICT RULES:',
-      'Return ONLY valid JSON',
-      'Do NOT add any explanation or extra text',
-      'Do NOT change JSON structure',
-      'Do NOT remove any fields',
-      'Keep keys exactly same',
-      'Do NOT wrap response in markdown',
-      'Translate values only. Preserve the same order and number of items.',
-      normalizedTargetLanguage === 'hindi'
-        ? 'Use Devanagari script for Hindi. Do not use Romanized Hindi.'
-        : 'Use natural, readable English.',
-      'INPUT FORMAT:',
-      '[',
-      '{',
-      '"question": "...",',
-      '"options": {',
-      '"A": "...",',
-      '"B": "...",',
-      '"C": "...",',
-      '"D": "..."',
-      '}',
-      '}',
-      ']',
-      'OUTPUT FORMAT (MUST MATCH EXACTLY):',
-      '[',
-      '{',
-      '"question": "...",',
-      '"options": {',
-      '"A": "...",',
-      '"B": "...",',
-      '"C": "...",',
-      '"D": "..."',
-      '}',
-      '}',
-      ']',
-    ].join('\n'),
-    userPrompt: JSON.stringify(translationPayload, null, 2),
-    temperature: 0.1,
-    maxTokens,
-  })
-
-  const parsed = extractJsonPayload(generated.text)
-  const translatedQuestions = normalizeTranslatedQuestionBatch(parsed, normalizedQuestions)
-  translatedQuestions.forEach((question) => {
-    validateTranslatedLanguage(question, normalizedTargetLanguage)
-  })
-
-  return translatedQuestions
+  // No network translation is attempted in the frontend-only build. A future
+  // AI provider can populate `question.translations`; until then, retain the
+  // original mock question content and keep the test engine fully local.
+  return normalizedQuestions.map((question) => (
+    getInlineQuestionTranslation(question, normalizedTargetLanguage) || { ...question }
+  ))
 }
 
 export async function translateQuestionContent(question, targetLanguage) {

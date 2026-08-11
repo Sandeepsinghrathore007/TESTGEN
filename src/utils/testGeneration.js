@@ -396,7 +396,7 @@ export function buildAIPrompt(config, content, promptOptions = {}, generationOpt
   }
 
   if (!includeReviewFields) {
-    return `You are an expert educator creating a ${difficulty} difficulty test for students.
+    return `You are an expert competitive-exam educator creating a ${difficulty} difficulty test for a BCA 5th semester student preparing for RSSB Informatics Assistant.
 
 SUBJECT(S): ${subjectNames}
 TOPIC(S): ${topicNames}
@@ -412,6 +412,8 @@ ${exclusionInstruction}
 
 TASK:
 Generate exactly ${questionCount} multiple-choice questions based ONLY on the content provided above.
+Prefer conceptual understanding, practical application, and exam-focused reasoning over rote definitions.
+When the provided content supports it, shape questions like realistic RSSB Informatics Assistant practice.
 
 DIFFICULTY LEVEL: ${difficulty}
 ${difficultyGuide}
@@ -427,7 +429,7 @@ REQUIREMENTS:
 1. Each question MUST have exactly 4 options labeled A, B, C, D.
 2. Questions should test understanding, application, and critical thinking.
 3. Include variety: definitions, calculations, applications, analysis.
-4. Make incorrect options plausible but clearly wrong.
+4. Make incorrect options strong exam-style distractors: plausible, conceptually close, but clearly wrong.
 5. Base ALL questions on the actual content provided - do not add external information.
 6. Write the question text and all option text in ${questionLanguageLabel}.
 7. The output for each question must have:
@@ -444,7 +446,7 @@ ${questionOnlyExample}
 CRITICAL: Return ONLY the JSON array, no additional text, no markdown formatting, no code blocks.`
   }
 
-  return `You are an expert educator creating a ${difficulty} difficulty test for students.
+  return `You are an expert competitive-exam educator creating a ${difficulty} difficulty test for a BCA 5th semester student preparing for RSSB Informatics Assistant.
 
 SUBJECT(S): ${subjectNames}
 TOPIC(S): ${topicNames}
@@ -460,6 +462,8 @@ ${exclusionInstruction}
 
 TASK:
 Generate exactly ${questionCount} multiple-choice questions based ONLY on the content provided above.
+Prefer conceptual understanding, practical application, and exam-focused reasoning over rote definitions.
+When the provided content supports it, shape questions like realistic RSSB Informatics Assistant practice.
 
 DIFFICULTY LEVEL: ${difficulty}
 ${difficultyGuide}
@@ -477,7 +481,7 @@ REQUIREMENTS:
 2. Only ONE option should be correct.
 3. Questions should test understanding, application, and critical thinking.
 4. Include variety: definitions, calculations, applications, analysis.
-5. Make incorrect options plausible but clearly wrong.
+5. Make incorrect options strong exam-style distractors: plausible, conceptually close, but clearly wrong.
 6. Generate question, options, correctAnswer, and explanation in ONE API response.
 7. Write the question text and all option text in ${questionLanguageLabel}.
 8. The output for each question must have:
@@ -668,6 +672,50 @@ function extractJsonString(rawText) {
   }
 
   return trimmed
+}
+
+// Extract complete top-level JSON values without guessing or repairing.
+// This avoids accepting partial streamed output while still tolerating small
+// wrapper text before the actual JSON payload.
+function extractCompleteJsonValues(rawText) {
+  const text = sanitizeAiResponseText(rawText)
+  const values = []
+
+  for (let start = 0; start < text.length; start += 1) {
+    const opening = text[start]
+    if (opening !== '{' && opening !== '[') continue
+
+    const stack = [opening]
+    let inString = false
+    let escaped = false
+
+    for (let index = start + 1; index < text.length; index += 1) {
+      const char = text[index]
+      if (inString) {
+        if (escaped) escaped = false
+        else if (char === '\\') escaped = true
+        else if (char === '"') inString = false
+        continue
+      }
+
+      if (char === '"') {
+        inString = true
+      } else if (char === '{' || char === '[') {
+        stack.push(char)
+      } else if (char === '}' || char === ']') {
+        const lastOpening = stack[stack.length - 1]
+        const expectedClosing = lastOpening === '{' ? '}' : ']'
+        if (char !== expectedClosing) break
+        stack.pop()
+        if (stack.length === 0) {
+          values.push(text.slice(start, index + 1))
+          break
+        }
+      }
+    }
+  }
+
+  return Array.from(new Set(values))
 }
 
 function extractTopLevelObjectStrings(rawText) {
@@ -887,15 +935,12 @@ function resolveCorrectIndex(correctAnswer, options) {
  */
 export function parseAIResponse(
   responseText,
-  { fallbackDifficulty = 'medium', expectReviewFields = true } = {}
+  { fallbackDifficulty = 'medium', expectReviewFields = true, expectedQuestionCount = null } = {}
 ) {
   try {
-    const jsonText = extractJsonString(responseText)
     const parseCandidates = [
-      jsonText,
-      escapeInvalidJsonStringCharacters(jsonText),
-      repairJsonText(jsonText),
-      repairJsonText(escapeInvalidJsonStringCharacters(jsonText)),
+      ...extractCompleteJsonValues(responseText),
+      extractJsonString(responseText),
     ].filter(Boolean)
     const uniqueCandidates = Array.from(new Set(parseCandidates))
     let parsedPayload = null
@@ -908,19 +953,19 @@ export function parseAIResponse(
     }
 
     if (parsedPayload === null) {
-      parsedPayload = extractRecoveredQuestionsPayload(responseText)
-    }
-
-    if (parsedPayload === null) {
       console.error('AI test raw response (invalid JSON):', responseText)
-      console.error('AI test extracted JSON candidate:', jsonText)
-      throw new Error('AI returned invalid JSON. Please try again.')
+      console.error('AI test extracted JSON candidates:', uniqueCandidates)
+      throw new Error('AI returned malformed JSON. No test was created; please try again.')
     }
 
     const questions = extractQuestionsArray(parsedPayload)
 
     if (!Array.isArray(questions) || questions.length === 0) {
       throw new Error('Response does not contain questions')
+    }
+
+    if (Number.isInteger(expectedQuestionCount) && questions.length !== expectedQuestionCount) {
+      throw new Error(`AI returned ${questions.length} questions, but ${expectedQuestionCount} were requested`)
     }
 
     const validated = questions.map((question, index) => {

@@ -241,13 +241,6 @@ function TopBar({
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-        <ThemeSwitcher
-          activeThemeId={activeThemeId}
-          themeOptions={themeOptions}
-          onThemeChange={onThemeChange}
-          compact={showMenuButton}
-        />
-
         {canInstall && (
           <button
             type="button"

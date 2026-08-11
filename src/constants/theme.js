@@ -7,21 +7,9 @@
  */
 
 export const THEME_STORAGE_KEY = 'learnledger-theme'
-export const DEFAULT_THEME_ID = 'neo-dark'
+export const DEFAULT_THEME_ID = 'minimal-dark'
 
 export const APP_THEME_OPTIONS = [
-  {
-    id: 'neo-dark',
-    label: 'Neo Dark',
-    shortLabel: 'Neo',
-    description: 'Clean + premium SaaS',
-  },
-  {
-    id: 'glass-dark',
-    label: 'Glass Dark',
-    shortLabel: 'Glass',
-    description: 'Modern frosted glass',
-  },
   {
     id: 'minimal-dark',
     label: 'Minimal Dark',
@@ -31,58 +19,6 @@ export const APP_THEME_OPTIONS = [
 ]
 
 export const APP_THEMES = {
-  'neo-dark': {
-    id: 'neo-dark',
-    tokens: {
-      'page-background': 'radial-gradient(circle at top right, rgba(6,182,212,0.10), transparent 24%), radial-gradient(circle at top left, rgba(124,58,237,0.14), transparent 26%), #0B0F1A',
-      bg: '#0B0F1A',
-      surface: '#111827',
-      'surface-2': '#0F172A',
-      border: 'rgba(148,163,184,0.18)',
-      'border-strong': 'rgba(124,58,237,0.34)',
-      'text-1': '#E5E7EB',
-      'text-2': '#CBD5E1',
-      'text-3': '#9CA3AF',
-      accent: '#7C3AED',
-      'accent-2': '#06B6D4',
-      secondary: '#06B6D4',
-      'accent-soft': 'rgba(124,58,237,0.14)',
-      'accent-soft-strong': 'rgba(124,58,237,0.24)',
-      'accent-border': 'rgba(124,58,237,0.36)',
-      'topbar-bg': 'rgba(11,15,26,0.86)',
-      'control-bg': 'rgba(255,255,255,0.035)',
-      'control-border': 'rgba(148,163,184,0.18)',
-      'button-gradient': 'linear-gradient(135deg, #7C3AED, #06B6D4)',
-      'selection-bg': 'rgba(124,58,237,0.36)',
-      'shadow-soft': '0 18px 40px rgba(2,6,23,0.26)',
-    },
-  },
-  'glass-dark': {
-    id: 'glass-dark',
-    tokens: {
-      'page-background': 'radial-gradient(circle at top right, rgba(139,92,246,0.22), transparent 24%), radial-gradient(circle at top left, rgba(56,189,248,0.16), transparent 22%), #050816',
-      bg: '#050816',
-      surface: 'rgba(255,255,255,0.05)',
-      'surface-2': 'rgba(15,23,42,0.72)',
-      border: 'rgba(255,255,255,0.10)',
-      'border-strong': 'rgba(139,92,246,0.26)',
-      'text-1': '#F8FAFC',
-      'text-2': '#D8DEF7',
-      'text-3': '#94A3B8',
-      accent: '#8B5CF6',
-      'accent-2': '#38BDF8',
-      secondary: '#38BDF8',
-      'accent-soft': 'rgba(139,92,246,0.14)',
-      'accent-soft-strong': 'rgba(139,92,246,0.22)',
-      'accent-border': 'rgba(139,92,246,0.34)',
-      'topbar-bg': 'rgba(5,8,22,0.72)',
-      'control-bg': 'rgba(255,255,255,0.04)',
-      'control-border': 'rgba(255,255,255,0.12)',
-      'button-gradient': 'linear-gradient(135deg, rgba(139,92,246,0.95), rgba(56,189,248,0.95))',
-      'selection-bg': 'rgba(139,92,246,0.34)',
-      'shadow-soft': '0 20px 50px rgba(2,6,23,0.24)',
-    },
-  },
   'minimal-dark': {
     id: 'minimal-dark',
     tokens: {

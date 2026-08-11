@@ -1,19 +1,25 @@
 # Learnledger
 
-Learnledger is a study management web app built with React, Vite, and Firebase.
+Learnledger is a frontend-only study test app built with React and Vite.
 
 ## Features - 
 
-- Subject and topic management
-- Notes and study materials
-- AI assistant for explanations and structured notes
-- AI-generated mock tests
-- PDF-backed AI study context
+- Local mock AI chat that generates realistic practice tests
+- Timed test-taking, answers, review, and explanations
+- Browser localStorage persistence and Question Bank
+- Individual and complete Question Bank TXT exports
 
 ## Tech Stack 
 
 - React
 - Vite
-- Firebase Auth
-- Cloud Firestore
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+No API key, backend server, or environment configuration is required.
 

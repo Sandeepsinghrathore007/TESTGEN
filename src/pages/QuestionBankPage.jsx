@@ -1,1552 +1,712 @@
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
-import Modal from '@/components/ui/Modal'
-import {
-  BackIcon,
-  ChevronDownIcon,
-  DownloadIcon,
-  EditIcon,
-  PlusIcon,
-  QuestionBankIcon,
-  SearchIcon,
-  TrashIcon,
-  XIcon,
-} from '@/components/ui/Icons'
-import { TEXT1, TEXT2, TEXT3 } from '@/constants/theme'
-import {
-  createManualQuestionBankItem,
-  mergeQuestionBankItems,
-  normalizeQuestionBank,
-  normalizeQuestionBankItem,
-} from '@/utils/questionBank'
+import { useEffect, useState, useCallback } from 'react'
+import { TEXT1, TEXT2, TEXT3, BORDER } from '@/constants/theme'
+import { readSessionsAsync, writeSessionsAsync, deleteSessionAsync } from '@/services/sessionStorage'
+import { readSavedTestsAsync, saveTestAsync, writeSavedTestsAsync } from '@/services/localTestStorage'
+import { formatTestAsTxt, formatAllTestsAsTxt, downloadTxtFile } from '@/utils/exportTest'
+import TestTakingView from '@/components/tests/TestTakingView'
+import { calculateScore } from '@/utils/testScoring'
+import { attachStructuredResultContext, buildResultSummaryMessage } from '@/utils/testResultContext'
+import { uid } from '@/utils/id'
 
-const PAGE_SIZE = 25
+const FONT = "'DM Sans', sans-serif"
 
-const EMPTY_FORM = {
-  subjectId: '',
-  question: '',
-  answer: '',
-  explanation: '',
-}
 
-const SOURCE_TABS = [
-  { id: 'all', label: 'All' },
-  { id: 'manual', label: 'Manual' },
-  { id: 'generated', label: 'Generated' },
-]
+function attachOriginatingChat(test, chatId) {
+  const originChatId = test?.originatingChatId || test?.metadata?.originatingChatId || chatId || null
+  if (!test || !originChatId) return test
 
-function toTimestamp(value) {
-  const parsed = new Date(value || '')
-  return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime()
-}
-
-function fmt(value) {
-  return new Intl.NumberFormat('en-US').format(Number(value) || 0)
-}
-
-function buildPages(total, current) {
-  if (total <= 7) {
-    return Array.from({ length: total }, (_, index) => index + 1)
+  return {
+    ...test,
+    originatingChatId: originChatId,
+    metadata: {
+      ...(test.metadata || {}),
+      originatingChatId: originChatId,
+      origin: {
+        ...(test.metadata?.origin || {}),
+        chatId: originChatId,
+      },
+    },
   }
+}
 
-  const pages = [1]
-  const start = Math.max(2, current - 1)
-  const end = Math.min(total - 1, current + 1)
-
-  if (start > 2) pages.push('...')
-  for (let page = start; page <= end; page += 1) {
-    pages.push(page)
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  try {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric',
+    })
+  } catch {
+    return ''
   }
-  if (end < total - 1) pages.push('...')
-  pages.push(total)
-
-  return pages
 }
 
-function downloadTextFile(filename, content) {
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-  anchor.click()
-  URL.revokeObjectURL(url)
-}
+function levenshteinDistance(a, b) {
+  const matrix = []
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i]
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j
 
-function exportQuestionsAsText(questions) {
-  const lines = questions.map((question, index) => [
-    `Question ${index + 1}: ${question.questionText}`,
-    `Answer: ${question.answer || 'No answer available.'}`,
-  ].join('\n'))
-
-  downloadTextFile('question-bank.txt', lines.join('\n\n'))
-}
-
-function Ic({ children, size = 14 }) {
-  return (
-    <span style={{ width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      {children}
-    </span>
-  )
-}
-
-function Checkbox({ checked, onChange, indeterminate = false }) {
-  const ref = useRef(null)
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.indeterminate = indeterminate
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1]
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        )
+      }
     }
-  }, [indeterminate])
-
-  return (
-    <input
-      ref={ref}
-      type="checkbox"
-      checked={checked}
-      onChange={onChange}
-      style={{
-        width: 14,
-        height: 14,
-        margin: 0,
-        cursor: 'pointer',
-        accentColor: '#5eead4',
-        flexShrink: 0,
-      }}
-    />
-  )
+  }
+  return matrix[b.length][a.length]
 }
 
-function StatCard({ label, value, tint }) {
+function fuzzyMatch(query, target) {
+  const qNorm = String(query).toLowerCase().trim().replace(/[^a-z0-9]/g, '')
+  const tNorm = String(target).toLowerCase().trim().replace(/[^a-z0-9]/g, '')
+
+  if (!qNorm || !tNorm) return false
+  if (tNorm.includes(qNorm) || qNorm.includes(tNorm)) return true
+
+  const distance = levenshteinDistance(qNorm, tNorm)
+  const maxLen = Math.max(qNorm.length, tNorm.length)
+  const threshold = Math.max(2, Math.floor(maxLen * 0.25))
+  return distance <= threshold
+}
+
+function getTestScore(test) {
+  const questions = Array.isArray(test?.questions) ? test.questions : []
+  const answers = test?.answers && typeof test.answers === 'object' ? test.answers : {}
+
+  if (questions.length === 0) return null
+
+  if (typeof test.score === 'number' && typeof test.totalQuestions === 'number') {
+    return { correct: test.score, total: test.totalQuestions, percentage: test.percentage || 0 }
+  }
+
+  const answeredKeys = Object.keys(answers)
+  if (answeredKeys.length === 0) return null
+
+  let correct = 0
+  questions.forEach((q) => {
+    const userAnswer = answers[q.id]
+    if (userAnswer && String(userAnswer).toLowerCase() === String(q.correctAnswer || '').toLowerCase()) {
+      correct++
+    }
+  })
+
+  const total = questions.length
+  return { correct, total, percentage: total > 0 ? Math.round((correct / total) * 100) : 0 }
+}
+
+function ScoreDisplay({ test }) {
+  const isCompleted = test.status === 'completed'
+  const answeredCount = test.answers ? Object.keys(test.answers).length : 0
+  const totalQuestions = test.questions?.length || 0
+
+  if (!isCompleted && answeredCount > 0) {
+    return <span style={{ color: '#f59e0b', fontWeight: 600 }}>In Progress ({answeredCount}/{totalQuestions})</span>
+  }
+
+  const score = getTestScore(test)
+  if (!score) {
+    return <span style={{ color: TEXT3 }}>Not started</span>
+  }
+
+  const color = score.percentage >= 70 ? '#22c55e' : score.percentage >= 40 ? '#f59e0b' : '#ef4444'
+  return <span style={{ color, fontWeight: 600 }}>{score.correct}/{score.total} ({score.percentage}%)</span>
+}
+
+function ReviewOption({ opt, userAnswer, correctAnswer }) {
+  const isUserAnswer = userAnswer && String(userAnswer).toLowerCase() === String(opt.id).toLowerCase()
+  const isCorrect = String(correctAnswer || '').toLowerCase() === String(opt.id).toLowerCase()
+
+  let bg = 'transparent'
+  let borderColor = BORDER
+  let textColor = TEXT2
+  let badge = null
+
+  if (isCorrect && isUserAnswer) {
+    bg = 'rgba(34,197,94,0.10)'
+    borderColor = 'rgba(34,197,94,0.35)'
+    textColor = '#4ade80'
+    badge = 'Correct'
+  } else if (isCorrect) {
+    bg = 'rgba(34,197,94,0.06)'
+    borderColor = 'rgba(34,197,94,0.25)'
+    textColor = '#4ade80'
+    badge = 'Correct'
+  } else if (isUserAnswer) {
+    bg = 'rgba(239,68,68,0.10)'
+    borderColor = 'rgba(239,68,68,0.30)'
+    textColor = '#f87171'
+    badge = 'Your answer'
+  }
+
   return (
     <div style={{
-      flex: 1,
-      minWidth: 150,
+      padding: '9px 12px',
+      background: bg,
+      border: `1px solid ${borderColor}`,
+      borderRadius: 8,
+      color: textColor,
+      fontFamily: FONT,
+      fontSize: 13,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 8,
+    }}>
+      <span><strong>{String(opt.id).toUpperCase()}.</strong> {opt.text}</span>
+      {badge && <span style={{ fontSize: 11, fontWeight: 600, flexShrink: 0 }}>{badge}</span>}
+    </div>
+  )
+}
+
+function TestReviewPanel({ test, onClose, onExport }) {
+  const questions = Array.isArray(test?.questions) ? test.questions : []
+  const answers = test?.answers && typeof test.answers === 'object' ? test.answers : {}
+
+  return (
+    <div className="animate-fade-in" style={{
+      marginTop: 12,
+      padding: 20,
+      background: 'rgba(0,0,0,0.22)',
+      border: `1px solid ${BORDER}`,
       borderRadius: 14,
-      border: `1px solid ${tint}26`,
-      background: `linear-gradient(180deg, ${tint}14, rgba(19,16,36,0.92))`,
-      padding: '14px 16px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 20,
     }}>
       <div style={{
-        color: tint,
-        fontFamily: "'DM Sans', sans-serif",
-        fontSize: 28,
-        fontWeight: 900,
-        letterSpacing: '-0.05em',
-        lineHeight: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottom: `1px solid ${BORDER}`,
+        paddingBottom: 16,
+        gap: 12,
+        flexWrap: 'wrap',
       }}>
-        {value}
+        <div>
+          <h2 style={{ margin: 0, color: TEXT1, fontFamily: FONT, fontSize: 18, fontWeight: 800 }}>
+            {test.topic || test.title || 'Review Test'}
+          </h2>
+          <div style={{ color: TEXT3, fontFamily: FONT, fontSize: 12, marginTop: 4 }}>
+            {formatDate(test.completedAt || test.savedAt || test.createdAt)}
+            {' · '}
+            <ScoreDisplay test={test} />
+            {' · '}
+            {questions.length} questions
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" onClick={() => onExport(test)} style={{
+            padding: '7px 12px',
+            background: 'rgba(14,165,233,0.10)',
+            border: '1px solid rgba(14,165,233,0.28)',
+            borderRadius: 8,
+            color: '#38bdf8',
+            fontFamily: FONT,
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}>
+            Export
+          </button>
+          <button type="button" onClick={onClose} style={{
+            padding: '7px 12px',
+            background: 'rgba(255,255,255,0.04)',
+            border: `1px solid ${BORDER}`,
+            borderRadius: 8,
+            color: TEXT2,
+            fontFamily: FONT,
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}>
+            Close
+          </button>
+        </div>
       </div>
-      <div style={{
-        marginTop: 8,
-        color: TEXT3,
-        fontFamily: "'DM Sans', sans-serif",
-        fontSize: 10,
-        fontWeight: 800,
-        letterSpacing: '0.12em',
-        textTransform: 'uppercase',
-      }}>
-        {label}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+        {questions.map((q, idx) => {
+          const options = Array.isArray(q.options) ? q.options : []
+          const userAnswer = answers[q.id] || null
+          const correctAnswer = q.correctAnswer || ''
+
+          return (
+            <div key={q.id || idx} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{
+                color: TEXT1,
+                fontFamily: FONT,
+                fontSize: 14,
+                fontWeight: 600,
+                lineHeight: 1.6,
+              }}>
+                Q{idx + 1}. {q.question || q.prompt || 'Question'}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 4 }}>
+                {options.map((opt) => (
+                  <ReviewOption
+                    key={opt.id}
+                    opt={opt}
+                    userAnswer={userAnswer}
+                    correctAnswer={correctAnswer}
+                  />
+                ))}
+              </div>
+
+              {!userAnswer && (
+                <div style={{
+                  padding: '6px 10px',
+                  background: 'rgba(245,158,11,0.08)',
+                  border: '1px solid rgba(245,158,11,0.20)',
+                  borderRadius: 6,
+                  color: '#fbbf24',
+                  fontFamily: FONT,
+                  fontSize: 11,
+                }}>
+                  Skipped / Unanswered
+                </div>
+              )}
+
+              {q.explanation && (
+                <div style={{
+                  marginTop: 2,
+                  padding: 12,
+                  background: 'rgba(255,255,255,0.025)',
+                  borderRadius: 8,
+                  fontSize: 13,
+                  color: TEXT3,
+                  fontFamily: FONT,
+                  lineHeight: 1.6,
+                }}>
+                  <strong style={{ color: TEXT2 }}>Explanation:</strong>{' '}
+                  {String(q.explanation).replace(/\\n/g, '\n')}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
 }
 
-function FormLabel({ children }) {
-  return (
-    <label style={{
-      display: 'block',
-      marginBottom: 6,
-      color: TEXT3,
-      fontFamily: "'DM Sans', sans-serif",
-      fontSize: 10,
-      fontWeight: 800,
-      letterSpacing: '0.12em',
-      textTransform: 'uppercase',
-    }}>
-      {children}
-    </label>
-  )
-}
+export default function QuestionBankPage() {
+  const [isInitializing, setIsInitializing] = useState(true)
+  const [sessions, setSessions] = useState([])
+  const [selectedTestId, setSelectedTestId] = useState(null)
+  const [activeTestToResume, setActiveTestToResume] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  
 
-function FieldInput({ value, onChange, placeholder, as = 'input' }) {
-  const baseStyle = {
-    width: '100%',
-    boxSizing: 'border-box',
-    padding: '11px 12px',
-    borderRadius: 10,
-    border: '1px solid rgba(255,255,255,0.08)',
-    background: 'rgba(255,255,255,0.04)',
-    color: TEXT1,
-    fontFamily: "'DM Sans', sans-serif",
-    fontSize: 13,
-    outline: 'none',
+  const loadData = useCallback(async () => {
+    const loadedSessions = await readSessionsAsync()
+    setSessions(loadedSessions)
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function init() {
+      try {
+        await loadData()
+      } catch (initError) {
+        console.error('Failed to initialize saved tests:', initError)
+      } finally {
+        if (isMounted) setIsInitializing(false)
+      }
+    }
+
+    init()
+    return () => { isMounted = false }
+  }, [loadData])
+
+  useEffect(() => {
+    const syncSessions = () => {
+      loadData().catch(console.error)
+    }
+    window.addEventListener('learnledger:sessions-updated', syncSessions)
+    return () => window.removeEventListener('learnledger:sessions-updated', syncSessions)
+  }, [loadData])
+
+  const handleExportTest = (test) => {
+    const txt = formatTestAsTxt(test)
+    const name = String(test.topic || test.title || 'saved-test')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    downloadTxtFile(txt, name)
   }
 
-  if (as === 'textarea') {
+  const handleExportAll = () => {
+    const allTests = sessions.map((s) => s.test).filter(Boolean)
+    if (allTests.length === 0) return
+    const txt = formatAllTestsAsTxt(allTests)
+    downloadTxtFile(txt, 'learnledger-question-bank')
+  }
+
+  const handleDelete = async (session) => {
+    if (!window.confirm(`Delete "${session.title || 'this session'}"?`)) return
+    await deleteSessionAsync(session.id)
+    if (session.test?.id) {
+      const nextTests = (await readSavedTestsAsync()).filter((t) => t.id !== session.test.id)
+      await writeSavedTestsAsync(nextTests)
+    }
+    await loadData()
+    if (selectedTestId === session.test?.id) setSelectedTestId(null)
+  }
+
+  const handleResumeTest = (test) => {
+    const targetSession = sessions.find((s) => s.test?.id === test?.id)
+    setActiveTestToResume(attachOriginatingChat(test, targetSession?.id))
+  }
+
+  const handleRestartTest = async (test) => {
+    if (!window.confirm(`Restart "${test.topic || test.title || 'this test'}"? Your previous answers will be cleared.`)) return
+    
+    const targetSession = sessions.find((s) => s.test?.id === test?.id)
+    const resetTest = {
+      ...test,
+      status: 'in-progress',
+      answers: {},
+      currentQuestionIndex: 0,
+      bookmarkedQuestions: [],
+      hintsUsed: [],
+      startTime: new Date().toISOString(),
+      completedAt: null,
+      scoreResult: null,
+      resultContext: null,
+    }
+
+    if (targetSession) {
+      const updatedSession = { ...targetSession, test: resetTest }
+      const allSessions = await readSessionsAsync()
+      const filtered = allSessions.filter((s) => s.id !== updatedSession.id)
+      await writeSessionsAsync([updatedSession, ...filtered])
+    }
+    
+    await saveTestAsync(resetTest)
+    await loadData()
+    setActiveTestToResume(attachOriginatingChat(resetTest, targetSession?.id))
+  }
+
+  const handleUpdateResumingTest = async (updater) => {
+    const nextTest = typeof updater === 'function' ? updater(activeTestToResume) : updater
+    if (!nextTest) {
+      setActiveTestToResume(nextTest)
+      return nextTest
+    }
+
+    const targetSession = sessions.find((s) => s.test?.id === nextTest.id)
+    if (targetSession) {
+      const updatedSession = { ...targetSession, test: nextTest }
+      const allSessions = await readSessionsAsync()
+      const filtered = allSessions.filter((s) => s.id !== updatedSession.id)
+      await writeSessionsAsync([updatedSession, ...filtered])
+    }
+    await saveTestAsync(nextTest)
+    setActiveTestToResume(nextTest)
+    return nextTest
+  }
+
+  const handleFinishResumingTest = async (testAttempt) => {
+    const scoreResult = calculateScore(testAttempt.questions, testAttempt.answers)
+    const completedAt = new Date().toISOString()
+    const completedTest = attachStructuredResultContext(attachOriginatingChat({
+      ...testAttempt,
+      ...scoreResult,
+      scoreResult,
+      status: 'completed',
+      completedAt,
+    }, testAttempt.originatingChatId))
+
+    const targetSession = sessions.find((s) =>
+      s.id === completedTest.originatingChatId || s.test?.id === completedTest.id
+    )
+    if (targetSession) {
+      const postTestSummaryMessage = {
+        id: `msg_summary_${Date.now()}_${uid()}`,
+        role: 'assistant',
+        createdAt: completedAt,
+        content: buildResultSummaryMessage(completedTest),
+        testData: completedTest,
+        resultContext: completedTest.resultContext,
+      }
+      const updatedSession = {
+        ...targetSession,
+        messages: [...(targetSession.messages || []), postTestSummaryMessage],
+        test: completedTest,
+        testId: completedTest.id,
+      }
+      const allSessions = await readSessionsAsync()
+      const filtered = allSessions.filter((s) => s.id !== updatedSession.id)
+      await writeSessionsAsync([updatedSession, ...filtered])
+    }
+    await saveTestAsync(completedTest)
+
+    setActiveTestToResume(null)
+    await loadData()
+  }
+
+  
+
+  if (activeTestToResume) {
     return (
-      <textarea
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        style={{ ...baseStyle, minHeight: 88, resize: 'vertical' }}
+      <TestTakingView
+        test={activeTestToResume}
+        onUpdateTest={handleUpdateResumingTest}
+        onFinish={handleFinishResumingTest}
+        onExit={() => setActiveTestToResume(null)}
       />
     )
   }
 
-  return <input value={value} onChange={onChange} placeholder={placeholder} style={baseStyle} />
-}
-
-function getSelectStyle() {
-  return {
-    width: '100%',
-    boxSizing: 'border-box',
-    padding: '11px 34px 11px 12px',
-    borderRadius: 10,
-    border: '1px solid rgba(255,255,255,0.08)',
-    background: '#171327',
-    color: '#f4f0ff',
-    fontFamily: "'DM Sans', sans-serif",
-    fontSize: 13,
-    outline: 'none',
-    appearance: 'none',
-    WebkitAppearance: 'none',
-    MozAppearance: 'none',
-    colorScheme: 'dark',
-  }
-}
-
-function QuestionExpansion({ item, onEdit, onDelete }) {
-  return (
-    <div style={{
-      borderTop: '1px solid rgba(255,255,255,0.05)',
-      padding: '14px 16px 16px',
-      background: 'rgba(18,15,34,0.84)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 12,
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 10,
-        flexWrap: 'wrap',
-      }}>
-        <div style={{
-          color: TEXT3,
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 11,
-          fontWeight: 600,
-        }}>
-          {item.subject} | {item.source === 'generated' ? 'Generated from Test' : 'Manual Entry'}
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            type="button"
-            onClick={() => onEdit(item)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              borderRadius: 9,
-              border: '1px solid rgba(255,255,255,0.08)',
-              background: 'rgba(255,255,255,0.03)',
-              color: TEXT2,
-              cursor: 'pointer',
-              padding: '7px 10px',
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 11,
-              fontWeight: 700,
-            }}
-          >
-            <Ic size={11}><EditIcon /></Ic>
-            Edit
-          </button>
-          <button
-            type="button"
-            onClick={() => onDelete(item)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              borderRadius: 9,
-              border: '1px solid rgba(248,113,113,0.2)',
-              background: 'rgba(248,113,113,0.08)',
-              color: '#fca5a5',
-              cursor: 'pointer',
-              padding: '7px 10px',
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 11,
-              fontWeight: 700,
-            }}
-          >
-            <Ic size={11}><TrashIcon /></Ic>
-            Delete
-          </button>
-        </div>
+  if (isInitializing) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: TEXT3, fontFamily: FONT }}>
+        Loading Question Bank...
       </div>
-
-      <div style={{
-        borderRadius: 12,
-        border: '1px solid rgba(94,234,212,0.16)',
-        background: 'rgba(94,234,212,0.06)',
-        padding: '12px 14px',
-      }}>
-        <div style={{
-          color: '#5eead4',
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 10,
-          fontWeight: 800,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          marginBottom: 6,
-        }}>
-          Answer
-        </div>
-        <div style={{
-          color: TEXT1,
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 13,
-          lineHeight: 1.75,
-          whiteSpace: 'pre-wrap',
-        }}>
-          {item.answer || 'No answer available.'}
-        </div>
-      </div>
-
-      <div style={{
-        borderRadius: 12,
-        border: '1px solid rgba(96,165,250,0.16)',
-        background: 'rgba(96,165,250,0.05)',
-        padding: '12px 14px',
-      }}>
-        <div style={{
-          color: '#60a5fa',
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 10,
-          fontWeight: 800,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          marginBottom: 6,
-        }}>
-          Explanation
-        </div>
-        <div style={{
-          color: TEXT2,
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 13,
-          lineHeight: 1.75,
-          whiteSpace: 'pre-wrap',
-        }}>
-          {item.explanation || 'No explanation available.'}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function TableRow({
-  item,
-  index,
-  expanded,
-  selectionMode,
-  checked,
-  onToggleChecked,
-  onToggleExpanded,
-  onEdit,
-  onDelete,
-}) {
-  const gridTemplateColumns = selectionMode
-    ? '38px 56px minmax(0,1fr) 148px'
-    : '56px minmax(0,1fr) 148px'
-
-  const rowStyle = {
-    display: 'grid',
-    gridTemplateColumns,
-    alignItems: 'center',
-    gap: 12,
-    padding: '12px 16px',
-    cursor: 'pointer',
-    borderLeft: `2px solid ${expanded ? '#5eead4' : 'transparent'}`,
-    background: expanded ? 'rgba(94,234,212,0.06)' : 'transparent',
-    transition: 'background 0.16s ease, border-color 0.16s ease',
-  }
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      onToggleExpanded()
-    }
-  }
-
-  return (
-    <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-      <div
-        role="button"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        onClick={onToggleExpanded}
-        style={rowStyle}
-        onMouseEnter={(event) => {
-          if (!expanded) {
-            event.currentTarget.style.background = 'rgba(255,255,255,0.03)'
-          }
-        }}
-        onMouseLeave={(event) => {
-          event.currentTarget.style.background = expanded ? 'rgba(94,234,212,0.06)' : 'transparent'
-        }}
-      >
-        {selectionMode && (
-          <div
-            onClick={(event) => event.stopPropagation()}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <Checkbox checked={checked} onChange={onToggleChecked} />
-          </div>
-        )}
-
-        <div style={{
-          width: 28,
-          height: 28,
-          borderRadius: 8,
-          background: expanded ? 'rgba(94,234,212,0.16)' : 'rgba(255,255,255,0.05)',
-          color: expanded ? '#5eead4' : TEXT3,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 11,
-          fontWeight: 800,
-          flexShrink: 0,
-        }}>
-          {index}
-        </div>
-
-        <div style={{ minWidth: 0 }}>
-          <div style={{
-            color: TEXT1,
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: 13,
-            fontWeight: 600,
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-          }}>
-            {item.questionText}
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation()
-              onToggleExpanded()
-            }}
-            aria-label={expanded ? 'Collapse answer' : 'Reveal answer'}
-            title={expanded ? 'Collapse answer' : 'Reveal answer'}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              border: `1px solid ${expanded ? 'rgba(94,234,212,0.26)' : 'rgba(255,255,255,0.08)'}`,
-              background: expanded ? 'rgba(94,234,212,0.12)' : 'rgba(255,255,255,0.03)',
-              color: expanded ? '#a7f3d0' : TEXT2,
-              cursor: 'pointer',
-              padding: 0,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.16s ease' }}>
-              <Ic size={12}><ChevronDownIcon /></Ic>
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <div style={{
-        maxHeight: expanded ? 380 : 0,
-        opacity: expanded ? 1 : 0,
-        overflow: 'hidden',
-        transition: 'max-height 0.24s ease, opacity 0.18s ease',
-      }}>
-        {expanded && <QuestionExpansion item={item} onEdit={onEdit} onDelete={onDelete} />}
-      </div>
-    </div>
-  )
-}
-
-function MobileRow({
-  item,
-  index,
-  expanded,
-  selectionMode,
-  checked,
-  onToggleChecked,
-  onToggleExpanded,
-  onEdit,
-  onDelete,
-}) {
-  return (
-    <div style={{
-      borderRadius: 14,
-      border: `1px solid ${expanded ? 'rgba(94,234,212,0.18)' : 'rgba(255,255,255,0.06)'}`,
-      background: expanded ? 'rgba(94,234,212,0.05)' : 'rgba(255,255,255,0.025)',
-      overflow: 'hidden',
-      transition: 'border-color 0.16s ease, background 0.16s ease',
-    }}>
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={onToggleExpanded}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault()
-            onToggleExpanded()
-          }
-        }}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-          padding: '14px',
-          cursor: 'pointer',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-            {selectionMode && (
-              <div onClick={(event) => event.stopPropagation()}>
-                <Checkbox checked={checked} onChange={onToggleChecked} />
-              </div>
-            )}
-            <div style={{
-              minWidth: 28,
-              height: 28,
-              borderRadius: 8,
-              background: expanded ? 'rgba(94,234,212,0.16)' : 'rgba(255,255,255,0.05)',
-              color: expanded ? '#5eead4' : TEXT3,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 11,
-              fontWeight: 800,
-            }}>
-              {index}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation()
-              onToggleExpanded()
-            }}
-            aria-label={expanded ? 'Collapse answer' : 'Reveal answer'}
-            title={expanded ? 'Collapse answer' : 'Reveal answer'}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              border: `1px solid ${expanded ? 'rgba(94,234,212,0.26)' : 'rgba(255,255,255,0.08)'}`,
-              background: expanded ? 'rgba(94,234,212,0.12)' : 'rgba(255,255,255,0.03)',
-              color: expanded ? '#a7f3d0' : TEXT2,
-              cursor: 'pointer',
-              padding: 0,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.16s ease' }}>
-              <Ic size={12}><ChevronDownIcon /></Ic>
-            </span>
-          </button>
-        </div>
-
-        <div style={{
-          color: TEXT1,
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 13,
-          fontWeight: 600,
-          lineHeight: 1.55,
-        }}>
-          {item.questionText}
-        </div>
-      </div>
-
-      <div style={{
-        maxHeight: expanded ? 440 : 0,
-        opacity: expanded ? 1 : 0,
-        overflow: 'hidden',
-        transition: 'max-height 0.24s ease, opacity 0.18s ease',
-      }}>
-        {expanded && <QuestionExpansion item={item} onEdit={onEdit} onDelete={onDelete} />}
-      </div>
-    </div>
-  )
-}
-
-export default function QuestionBankPage({ subjects, onUpdateSubject }) {
-  const [search, setSearch] = useState('')
-  const deferredSearch = useDeferredValue(search)
-  const [subjectFilter, setSubjectFilter] = useState('all')
-  const [sourceFilter, setSourceFilter] = useState('all')
-  const [page, setPage] = useState(1)
-  const [expandedId, setExpandedId] = useState(null)
-  const [selectionMode, setSelectionMode] = useState(false)
-  const [checked, setChecked] = useState({})
-  const [modalOpen, setModalOpen] = useState(false)
-  const [editingQuestion, setEditingQuestion] = useState(null)
-  const [form, setForm] = useState({ ...EMPTY_FORM })
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== 'undefined' ? window.innerWidth < 860 : false
-  )
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined
-
-    const handleResize = () => setIsMobile(window.innerWidth < 860)
-    window.addEventListener('resize', handleResize)
-
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  const allItems = useMemo(
-    () => subjects
-      .flatMap((subject) =>
-        normalizeQuestionBank(subject.questionBank, { subjectId: subject.id }).map((item) => ({
-          ...item,
-          questionText: item.question,
-          subject: subject.name || 'Untitled Subject',
-          source: item.sourceType === 'generated' ? 'generated' : 'manual',
-          sortTime: toTimestamp(item.updatedAt || item.createdAt),
-        }))
-      )
-      .sort((left, right) => right.sortTime - left.sortTime),
-    [subjects]
-  )
-
-  const filteredItems = useMemo(() => {
-    const query = deferredSearch.trim().toLowerCase()
-
-    return allItems.filter((item) => {
-      if (subjectFilter !== 'all' && item.subjectId !== subjectFilter) return false
-      if (sourceFilter !== 'all' && item.source !== sourceFilter) return false
-      if (!query) return true
-
-      return [
-        item.questionText,
-        item.subject,
-        item.answer,
-        item.explanation,
-      ]
-        .filter(Boolean)
-        .some((value) => value.toLowerCase().includes(query))
-    })
-  }, [allItems, deferredSearch, sourceFilter, subjectFilter])
-
-  const summary = useMemo(() => ({
-    total: allItems.length,
-    manual: allItems.filter((item) => item.source === 'manual').length,
-    generated: allItems.filter((item) => item.source === 'generated').length,
-    subjects: new Set(allItems.map((item) => item.subjectId).filter(Boolean)).size,
-  }), [allItems])
-
-  const totalPages = Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE))
-  const pageStart = (page - 1) * PAGE_SIZE
-  const paginatedItems = useMemo(
-    () => filteredItems.slice(pageStart, pageStart + PAGE_SIZE),
-    [filteredItems, pageStart]
-  )
-  const pageNumbers = buildPages(totalPages, page)
-
-  const selectedItems = useMemo(
-    () => allItems.filter((item) => checked[item.id]),
-    [allItems, checked]
-  )
-  const checkedCount = selectedItems.length
-  const allCheckedOnPage = paginatedItems.length > 0 && paginatedItems.every((item) => checked[item.id])
-  const someCheckedOnPage = paginatedItems.some((item) => checked[item.id])
-
-  useEffect(() => {
-    setPage(1)
-  }, [deferredSearch, sourceFilter, subjectFilter])
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages)
-    }
-  }, [page, totalPages])
-
-  useEffect(() => {
-    if (expandedId && !filteredItems.some((item) => item.id === expandedId)) {
-      setExpandedId(null)
-    }
-  }, [expandedId, filteredItems])
-
-  useEffect(() => {
-    const validIds = new Set(allItems.map((item) => item.id))
-    setChecked((previous) => {
-      const next = Object.fromEntries(
-        Object.entries(previous).filter(([id, value]) => value && validIds.has(id))
-      )
-
-      if (Object.keys(next).length === Object.keys(previous).length) {
-        return previous
-      }
-
-      return next
-    })
-  }, [allItems])
-
-  const showingFrom = filteredItems.length === 0 ? 0 : pageStart + 1
-  const showingTo = Math.min(pageStart + PAGE_SIZE, filteredItems.length)
-  const hasFilters = Boolean(search.trim()) || sourceFilter !== 'all' || subjectFilter !== 'all'
-
-  const openAdd = () => {
-    setEditingQuestion(null)
-    setForm({
-      ...EMPTY_FORM,
-      subjectId: subjects[0]?.id || '',
-    })
-    setModalOpen(true)
-  }
-
-  const openEdit = (item) => {
-    setEditingQuestion(item)
-    setForm({
-      subjectId: item.subjectId || '',
-      question: item.questionText || '',
-      answer: item.answer || '',
-      explanation: item.explanation || '',
-    })
-    setModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalOpen(false)
-    setEditingQuestion(null)
-  }
-
-  const saveSubjectQuestionBank = async (subjectId, nextQuestionBank) => {
-    const subject = subjects.find((item) => item.id === subjectId)
-    if (!subject || !onUpdateSubject) return
-
-    await onUpdateSubject({
-      ...subject,
-      questionBank: normalizeQuestionBank(nextQuestionBank, { subjectId }),
-    })
-  }
-
-  const handleSubmit = async () => {
-    const question = form.question.trim()
-    const answer = form.answer.trim()
-    const explanation = form.explanation.trim()
-
-    if (!form.subjectId || !question) {
-      window.alert('Subject and question are required.')
-      return
-    }
-
-    const targetSubject = subjects.find((item) => item.id === form.subjectId)
-    if (!targetSubject) return
-
-    const nextItem = editingQuestion
-      ? normalizeQuestionBankItem({
-          ...editingQuestion,
-          subjectId: form.subjectId,
-          question,
-          answer,
-          explanation,
-          updatedAt: new Date().toISOString(),
-        }, { subjectId: form.subjectId })
-      : createManualQuestionBankItem({
-          subjectId: form.subjectId,
-          question,
-          answer,
-          explanation,
-        })
-
-    if (editingQuestion && editingQuestion.subjectId !== form.subjectId) {
-      const previousSubject = subjects.find((item) => item.id === editingQuestion.subjectId)
-
-      if (previousSubject) {
-        await saveSubjectQuestionBank(
-          previousSubject.id,
-          normalizeQuestionBank(previousSubject.questionBank, { subjectId: previousSubject.id }).filter(
-            (item) => item.id !== editingQuestion.id
-          )
-        )
-      }
-
-      await saveSubjectQuestionBank(
-        targetSubject.id,
-        mergeQuestionBankItems(targetSubject.questionBank, [nextItem], { subjectId: targetSubject.id })
-      )
-    } else {
-      const nextQuestionBank = editingQuestion
-        ? normalizeQuestionBank(targetSubject.questionBank, { subjectId: targetSubject.id }).map((item) =>
-            item.id === editingQuestion.id ? nextItem : item
-          )
-        : mergeQuestionBankItems(targetSubject.questionBank, [nextItem], { subjectId: targetSubject.id })
-
-      await saveSubjectQuestionBank(targetSubject.id, nextQuestionBank)
-    }
-
-    closeModal()
-  }
-
-  const handleDeleteQuestion = async (item) => {
-    if (!window.confirm('Delete this question?')) return
-
-    const subject = subjects.find((subjectItem) => subjectItem.id === item.subjectId)
-    if (!subject) return
-
-    await saveSubjectQuestionBank(
-      subject.id,
-      normalizeQuestionBank(subject.questionBank, { subjectId: subject.id }).filter(
-        (entry) => entry.id !== item.id
-      )
     )
-
-    setExpandedId((previous) => (previous === item.id ? null : previous))
-    setChecked((previous) => {
-      const next = { ...previous }
-      delete next[item.id]
-      return next
-    })
   }
 
-  const handleDeleteSelected = async () => {
-    const ids = selectedItems.map((item) => item.id)
-    if (ids.length === 0) return
+  const sessionsWithTests = sessions.filter((s) => s.test && s.test.questions?.length > 0)
 
-    if (!window.confirm(`Delete ${ids.length} selected question(s)?`)) return
+  const filteredSessions = sessionsWithTests.filter((s) => {
+    if (!searchQuery.trim()) return true
+    const topic = s.test?.topic || ''
+    const title = s.test?.title || s.title || ''
+    return fuzzyMatch(searchQuery, topic) || fuzzyMatch(searchQuery, title)
+  })
 
-    const questionsBySubject = {}
-    selectedItems.forEach((item) => {
-      if (!questionsBySubject[item.subjectId]) {
-        questionsBySubject[item.subjectId] = []
-      }
-      questionsBySubject[item.subjectId].push(item.id)
-    })
-
-    for (const [subjectId, questionIds] of Object.entries(questionsBySubject)) {
-      const subject = subjects.find((item) => item.id === subjectId)
-      if (!subject) continue
-
-      await saveSubjectQuestionBank(
-        subjectId,
-        normalizeQuestionBank(subject.questionBank, { subjectId }).filter(
-          (item) => !questionIds.includes(item.id)
-        )
-      )
-    }
-
-    setChecked({})
-    setSelectionMode(false)
-    if (expandedId && ids.includes(expandedId)) {
-      setExpandedId(null)
-    }
-  }
-
-  const handleExportSelected = () => {
-    if (selectedItems.length === 0) return
-    exportQuestionsAsText(selectedItems)
-  }
-
-  const toggleSelectionMode = () => {
-    setSelectionMode((previous) => {
-      const nextMode = !previous
-      if (!nextMode) {
-        setChecked({})
-      }
-      return nextMode
-    })
-  }
-
-  const toggleChecked = (id) => {
-    setChecked((previous) => ({
-      ...previous,
-      [id]: !previous[id],
-    }))
-  }
-
-  const togglePageSelection = () => {
-    setChecked((previous) => {
-      const next = { ...previous }
-
-      if (allCheckedOnPage) {
-        paginatedItems.forEach((item) => {
-          delete next[item.id]
-        })
-        return next
-      }
-
-      paginatedItems.forEach((item) => {
-        next[item.id] = true
-      })
-      return next
-    })
-  }
-
-  const clearFilters = () => {
-    setSearch('')
-    setSubjectFilter('all')
-    setSourceFilter('all')
-    setPage(1)
-  }
+  const selectedSession = sessions.find((s) => s.test?.id === selectedTestId) || null
+  const selectedTest = selectedSession?.test || null
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 16,
-        flexWrap: 'wrap',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 42,
-            height: 42,
-            borderRadius: 12,
-            border: '1px solid rgba(94,234,212,0.18)',
-            background: 'rgba(94,234,212,0.08)',
-            color: '#5eead4',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}>
-            <Ic size={17}><QuestionBankIcon /></Ic>
-          </div>
-          <div>
-            <h1 style={{
-              margin: 0,
-              color: TEXT1,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 24,
-              fontWeight: 900,
-              letterSpacing: '-0.04em',
-            }}>
-              Question Bank
-            </h1>
-            <p style={{
-              margin: '4px 0 0',
-              color: TEXT3,
-              fontFamily: "'DM Sans', sans-serif",
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 20, fontFamily: FONT }}>
+
+      {/* Title block */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+        <div>
+          <h1 style={{ margin: 0, color: TEXT1, fontSize: 24, fontWeight: 900, letterSpacing: '-0.04em' }}>
+            Question Bank
+          </h1>
+          <p style={{ margin: '4px 0 0', color: TEXT3, fontSize: 13 }}>
+            Saved AI tests · {sessionsWithTests.length} test{sessionsWithTests.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+      </div>
+
+      {/* Filter and controls header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="🔍 Search tests by topic..."
+          style={{
+            flex: 1,
+            minWidth: 260,
+            padding: '10px 16px',
+            background: 'rgba(0, 0, 0, 0.22)',
+            border: `1px solid ${BORDER}`,
+            borderRadius: 10,
+            color: TEXT1,
+            fontFamily: FONT,
+            fontSize: 13,
+            outline: 'none',
+          }}
+        />
+
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          
+
+          
+
+          {sessionsWithTests.length > 0 && (
+            <button type="button" onClick={handleExportAll} style={{
+              padding: '9px 16px',
+              background: 'rgba(14,165,233,0.10)',
+              border: '1px solid rgba(14,165,233,0.28)',
+              borderRadius: 10,
+              color: '#38bdf8',
+              fontFamily: FONT,
               fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
             }}>
-              Browse reusable questions, reveal answers inline, and manage manual plus generated entries.
-            </p>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={toggleSelectionMode}
-            style={{
-              borderRadius: 11,
-              border: `1px solid ${selectionMode ? 'rgba(94,234,212,0.26)' : 'rgba(255,255,255,0.08)'}`,
-              background: selectionMode ? 'rgba(94,234,212,0.12)' : 'rgba(255,255,255,0.03)',
-              color: selectionMode ? '#a7f3d0' : TEXT2,
-              cursor: 'pointer',
-              padding: '10px 14px',
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 12,
-              fontWeight: 700,
-            }}
-          >
-            {selectionMode ? 'Cancel Select' : 'Select'}
-          </button>
-
-          <button
-            type="button"
-            onClick={openAdd}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              borderRadius: 12,
-              border: 'none',
-              background: 'linear-gradient(135deg, #38bdf8, #0ea5e9)',
-              color: '#f8fdff',
-              cursor: 'pointer',
-              padding: '11px 16px',
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 12,
-              fontWeight: 800,
-              boxShadow: '0 10px 24px rgba(14,165,233,0.22)',
-            }}
-          >
-            <Ic size={12}><PlusIcon /></Ic>
-            Add Question
-          </button>
+              ↓ Export All
+            </button>
+          )}
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <StatCard label="Total Questions" value={fmt(summary.total)} tint="#a855f7" />
-        <StatCard label="Manual Entries" value={fmt(summary.manual)} tint="#38bdf8" />
-        <StatCard label="Generated" value={fmt(summary.generated)} tint="#34d399" />
-        <StatCard label="Subjects Covered" value={fmt(summary.subjects)} tint="#fb923c" />
-      </div>
+      
 
-      <div style={{
-        borderRadius: 18,
-        border: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(16,13,30,0.82)',
-        overflow: 'hidden',
-      }}>
+      {/* Tests list */}
+      {filteredSessions.length === 0 ? (
         <div style={{
-          padding: '16px',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 14,
+          padding: '56px 20px',
+          textAlign: 'center',
+          background: 'rgba(16,13,30,0.82)',
+          border: `1px solid ${BORDER}`,
+          borderRadius: 14,
         }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'minmax(0,1.2fr) minmax(180px,220px)',
-            gap: 12,
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              borderRadius: 12,
-              border: '1px solid rgba(255,255,255,0.07)',
-              background: 'rgba(255,255,255,0.03)',
-              padding: '11px 12px',
-            }}>
-              <Ic size={13}><SearchIcon /></Ic>
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search..."
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  border: 'none',
-                  outline: 'none',
-                  background: 'transparent',
-                  color: TEXT1,
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                }}
-              />
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => setSearch('')}
-                  style={{
-                    border: 'none',
-                    background: 'transparent',
-                    color: TEXT3,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    padding: 0,
-                  }}
-                >
-                  <Ic size={11}><XIcon /></Ic>
-                </button>
-              )}
-            </div>
-
-            <div style={{ position: 'relative' }}>
-              <select
-                value={subjectFilter}
-                onChange={(event) => setSubjectFilter(event.target.value)}
-                style={getSelectStyle()}
-              >
-                <option value="all" style={{ backgroundColor: '#171327', color: '#f4f0ff' }}>
-                  All Subjects
-                </option>
-                {subjects.map((subject) => (
-                  <option
-                    key={subject.id}
-                    value={subject.id}
-                    style={{ backgroundColor: '#171327', color: '#f4f0ff' }}
-                  >
-                    {subject.name}
-                  </option>
-                ))}
-              </select>
-              <span style={{
-                position: 'absolute',
-                top: '50%',
-                right: 12,
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-                color: '#c4b5fd',
-              }}>
-                <Ic size={12}><ChevronDownIcon /></Ic>
-              </span>
-            </div>
-          </div>
-
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-            flexWrap: 'wrap',
-          }}>
-            <div style={{
-              display: 'inline-flex',
-              gap: 8,
-              padding: 4,
-              borderRadius: 999,
-              border: '1px solid rgba(255,255,255,0.06)',
-              background: 'rgba(255,255,255,0.025)',
-              flexWrap: 'wrap',
-            }}>
-              {SOURCE_TABS.map((tab) => {
-                const active = sourceFilter === tab.id
-
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setSourceFilter(tab.id)}
-                    style={{
-                      borderRadius: 999,
-                      border: 'none',
-                      background: active ? 'linear-gradient(135deg, rgba(94,234,212,0.24), rgba(56,189,248,0.16))' : 'transparent',
-                      color: active ? '#d1fae5' : TEXT3,
-                      cursor: 'pointer',
-                      padding: '8px 14px',
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {tab.label}
-                  </button>
-                )
-              })}
-            </div>
-
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              flexWrap: 'wrap',
-              justifyContent: isMobile ? 'flex-start' : 'flex-end',
-            }}>
-              <span style={{
-                color: TEXT3,
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 12,
-              }}>
-                {filteredItems.length === 0 ? 'No results' : `Showing ${showingFrom}-${showingTo} of ${fmt(filteredItems.length)}`}
-              </span>
-
-              {selectionMode && (
-                <>
-                  <span style={{
-                    color: checkedCount > 0 ? '#d1fae5' : TEXT3,
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}>
-                    {checkedCount} selected
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={handleDeleteSelected}
-                    disabled={checkedCount === 0}
-                    style={{
-                      borderRadius: 10,
-                      border: '1px solid rgba(248,113,113,0.18)',
-                      background: checkedCount === 0 ? 'rgba(248,113,113,0.04)' : 'rgba(248,113,113,0.08)',
-                      color: checkedCount === 0 ? 'rgba(252,165,165,0.45)' : '#fca5a5',
-                      cursor: checkedCount === 0 ? 'not-allowed' : 'pointer',
-                      padding: '8px 12px',
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
-                  >
-                    Delete Selected
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleExportSelected}
-                    disabled={checkedCount === 0}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 7,
-                      borderRadius: 10,
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      background: checkedCount === 0 ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)',
-                      color: checkedCount === 0 ? 'rgba(226,232,240,0.38)' : TEXT2,
-                      cursor: checkedCount === 0 ? 'not-allowed' : 'pointer',
-                      padding: '8px 12px',
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
-                  >
-                    <Ic size={11}><DownloadIcon /></Ic>
-                    Export Text
-                  </button>
-                </>
-              )}
-
-              {hasFilters && (
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  style={{
-                    border: 'none',
-                    background: 'transparent',
-                    color: TEXT3,
-                    cursor: 'pointer',
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    padding: 0,
-                  }}
-                >
-                  Clear filters
-                </button>
-              )}
-            </div>
+          <div style={{ color: TEXT3, fontFamily: FONT, fontSize: 14, lineHeight: 1.6 }}>
+            {searchQuery.trim() ? 'No matching tests found.' : 'No saved tests yet.'}
+            <br />
+            {searchQuery.trim() ? 'Try adjusting your search query.' : 'Generate tests from the AI chat to see them here.'}
           </div>
         </div>
+      ) : (
+        <div style={{
+          borderRadius: 14,
+          border: `1px solid ${BORDER}`,
+          background: 'rgba(16,13,30,0.82)',
+          overflow: 'hidden',
+        }}>
+          {filteredSessions.map((session, idx) => {
+            const test = session.test
+            const isCompleted = test.status === 'completed'
 
-        {filteredItems.length === 0 ? (
-          <div style={{
-            padding: '54px 20px',
-            textAlign: 'center',
-          }}>
-            <div style={{ fontSize: 28, marginBottom: 12 }}>Q</div>
-            <p style={{
-              margin: 0,
-              color: TEXT3,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 13,
-            }}>
-              {allItems.length === 0
-                ? 'No questions in the bank yet.'
-                : 'Nothing matches the current filters.'}
-            </p>
-          </div>
-        ) : (
-          <>
-            {!isMobile && (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: selectionMode
-                  ? '38px 56px minmax(0,1fr) 148px'
-                  : '56px minmax(0,1fr) 148px',
+            return (
+              <div key={session.id || idx} style={{
+                display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
                 gap: 12,
-                padding: '12px 16px',
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
-                background: 'rgba(255,255,255,0.02)',
+                padding: '14px 16px',
+                borderBottom: idx < filteredSessions.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                flexWrap: 'wrap',
               }}>
-                {selectionMode && (
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Checkbox
-                      checked={allCheckedOnPage}
-                      indeterminate={someCheckedOnPage && !allCheckedOnPage}
-                      onChange={togglePageSelection}
-                    />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{
+                    color: TEXT1,
+                    fontWeight: 700,
+                    fontFamily: FONT,
+                    fontSize: 14,
+                  }}>
+                    {test.topic || session.title || 'Untitled test'}
                   </div>
-                )}
-                <div style={{
-                  color: TEXT3,
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 10,
-                  fontWeight: 800,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                }}>
-                  No.
+                  <div style={{ color: TEXT3, fontSize: 12, marginTop: 4, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <span>{(test.questions || []).length} questions</span>
+                    <span>·</span>
+                    <ScoreDisplay test={test} />
+                    <span>·</span>
+                    <span>{formatDate(test.completedAt || test.createdAt || session.createdAt)}</span>
+                  </div>
                 </div>
-                <div style={{
-                  color: TEXT3,
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 10,
-                  fontWeight: 800,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                }}>
-                  Question
-                </div>
-                <div style={{
-                  color: TEXT3,
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 10,
-                  fontWeight: 800,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  textAlign: 'right',
-                }}>
-                  Action
+
+                <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                  {!isCompleted && (
+                    <button type="button"
+                      onClick={() => handleResumeTest(test)}
+                      style={{
+                        borderRadius: 8,
+                        border: 'none',
+                        background: 'linear-gradient(135deg, #10b981, #14b8a6)',
+                        color: '#fff',
+                        padding: '7px 14px',
+                        fontSize: 12,
+                        fontFamily: FONT,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}>
+                      ▶ Resume
+                    </button>
+                  )}
+
+                  {isCompleted ? (
+                    <button type="button"
+                      onClick={() => handleRestartTest(test)}
+                      style={{
+                        borderRadius: 8,
+                        border: 'none',
+                        background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                        color: '#fff',
+                        padding: '7px 14px',
+                        fontSize: 12,
+                        fontFamily: FONT,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}>
+                      ↺ Restart
+                    </button>
+                  ) : (
+                    <button type="button"
+                      onClick={() => handleRestartTest(test)}
+                      style={{
+                        borderRadius: 8,
+                        border: `1px solid ${BORDER}`,
+                        background: 'rgba(255,255,255,0.04)',
+                        color: TEXT2,
+                        padding: '7px 12px',
+                        fontSize: 12,
+                        fontFamily: FONT,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}>
+                      Restart
+                    </button>
+                  )}
+
+                  <button type="button"
+                    onClick={() => setSelectedTestId(selectedTestId === test.id ? null : test.id)}
+                    style={{
+                      borderRadius: 8,
+                      border: `1px solid ${selectedTestId === test.id ? 'rgba(139,92,246,0.40)' : BORDER}`,
+                      background: selectedTestId === test.id ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.04)',
+                      color: selectedTestId === test.id ? '#a78bfa' : TEXT2,
+                      padding: '7px 12px',
+                      fontSize: 12,
+                      fontFamily: FONT,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}>
+                    {selectedTestId === test.id ? 'Close' : 'Open / Review'}
+                  </button>
+                  <button type="button" onClick={() => handleExportTest(test)} style={{
+                    borderRadius: 8,
+                    border: `1px solid ${BORDER}`,
+                    background: 'rgba(255,255,255,0.04)',
+                    color: TEXT2,
+                    padding: '7px 12px',
+                    fontSize: 12,
+                    fontFamily: FONT,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}>
+                    Export
+                  </button>
+                  <button type="button" onClick={() => handleDelete(session)} style={{
+                    borderRadius: 8,
+                    border: '1px solid rgba(239,68,68,0.20)',
+                    background: 'rgba(239,68,68,0.08)',
+                    color: '#ef4444',
+                    padding: '7px 12px',
+                    fontSize: 12,
+                    fontFamily: FONT,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}>
+                    Delete
+                  </button>
                 </div>
               </div>
-            )}
-
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: isMobile ? 12 : 0,
-              padding: isMobile ? 12 : 0,
-            }}>
-              {paginatedItems.map((item, index) => {
-                const rowNumber = pageStart + index + 1
-                const expanded = expandedId === item.id
-
-                if (isMobile) {
-                  return (
-                    <MobileRow
-                      key={item.id}
-                      item={item}
-                      index={rowNumber}
-                      expanded={expanded}
-                      selectionMode={selectionMode}
-                      checked={Boolean(checked[item.id])}
-                      onToggleChecked={() => toggleChecked(item.id)}
-                      onToggleExpanded={() => setExpandedId((previous) => previous === item.id ? null : item.id)}
-                      onEdit={openEdit}
-                      onDelete={handleDeleteQuestion}
-                    />
-                  )
-                }
-
-                return (
-                  <TableRow
-                    key={item.id}
-                    item={item}
-                    index={rowNumber}
-                    expanded={expanded}
-                    selectionMode={selectionMode}
-                    checked={Boolean(checked[item.id])}
-                    onToggleChecked={() => toggleChecked(item.id)}
-                    onToggleExpanded={() => setExpandedId((previous) => previous === item.id ? null : item.id)}
-                    onEdit={openEdit}
-                    onDelete={handleDeleteQuestion}
-                  />
-                )
-              })}
-            </div>
-          </>
-        )}
-
-        {totalPages > 1 && (
-          <div style={{
-            padding: '14px 16px',
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-            flexWrap: 'wrap',
-          }}>
-            <span style={{
-              color: TEXT3,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 12,
-            }}>
-              Page {page} of {totalPages}
-            </span>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={() => setPage((previous) => Math.max(1, previous - 1))}
-                disabled={page === 1}
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(255,255,255,0.03)',
-                  color: TEXT2,
-                  cursor: page === 1 ? 'not-allowed' : 'pointer',
-                  opacity: page === 1 ? 0.38 : 1,
-                }}
-              >
-                <Ic size={11}><BackIcon /></Ic>
-              </button>
-
-              {pageNumbers.map((entry, index) => (
-                typeof entry === 'number' ? (
-                  <button
-                    key={entry}
-                    type="button"
-                    onClick={() => setPage(entry)}
-                    style={{
-                      minWidth: 30,
-                      height: 30,
-                      borderRadius: 8,
-                      border: `1px solid ${page === entry ? 'rgba(94,234,212,0.25)' : 'rgba(255,255,255,0.08)'}`,
-                      background: page === entry ? 'rgba(94,234,212,0.14)' : 'rgba(255,255,255,0.03)',
-                      color: page === entry ? '#d1fae5' : TEXT2,
-                      cursor: 'pointer',
-                      padding: '0 10px',
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {entry}
-                  </button>
-                ) : (
-                  <span
-                    key={`gap-${index}`}
-                    style={{
-                      color: TEXT3,
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 12,
-                      padding: '0 2px',
-                    }}
-                  >
-                    ...
-                  </span>
-                )
-              ))}
-
-              <button
-                type="button"
-                onClick={() => setPage((previous) => Math.min(totalPages, previous + 1))}
-                disabled={page === totalPages}
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(255,255,255,0.03)',
-                  color: TEXT2,
-                  cursor: page === totalPages ? 'not-allowed' : 'pointer',
-                  opacity: page === totalPages ? 0.38 : 1,
-                  transform: 'rotate(180deg)',
-                }}
-              >
-                <Ic size={11}><BackIcon /></Ic>
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <Modal open={modalOpen} onClose={closeModal} title={editingQuestion ? 'Edit Question' : 'Add Question'} width={560}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div>
-            <FormLabel>Subject</FormLabel>
-            <div style={{ position: 'relative' }}>
-              <select
-                value={form.subjectId}
-                onChange={(event) => setForm((previous) => ({ ...previous, subjectId: event.target.value }))}
-                style={getSelectStyle()}
-              >
-                <option value="" style={{ backgroundColor: '#171327', color: '#f4f0ff' }}>
-                  Select subject
-                </option>
-                {subjects.map((subject) => (
-                  <option
-                    key={subject.id}
-                    value={subject.id}
-                    style={{ backgroundColor: '#171327', color: '#f4f0ff' }}
-                  >
-                    {subject.name}
-                  </option>
-                ))}
-              </select>
-              <span style={{
-                position: 'absolute',
-                top: '50%',
-                right: 12,
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-                color: '#c4b5fd',
-              }}>
-                <Ic size={12}><ChevronDownIcon /></Ic>
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <FormLabel>Question</FormLabel>
-            <FieldInput
-              as="textarea"
-              value={form.question}
-              onChange={(event) => setForm((previous) => ({ ...previous, question: event.target.value }))}
-              placeholder="Write the question..."
-            />
-          </div>
-
-          <div>
-            <FormLabel>Answer (Optional)</FormLabel>
-            <FieldInput
-              as="textarea"
-              value={form.answer}
-              onChange={(event) => setForm((previous) => ({ ...previous, answer: event.target.value }))}
-              placeholder="Write the answer..."
-            />
-          </div>
-
-          <div>
-            <FormLabel>Explanation (Optional)</FormLabel>
-            <FieldInput
-              as="textarea"
-              value={form.explanation}
-              onChange={(event) => setForm((previous) => ({ ...previous, explanation: event.target.value }))}
-              placeholder="Explain why this answer is correct..."
-            />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-            <button
-              type="button"
-              onClick={closeModal}
-              style={{
-                borderRadius: 10,
-                border: '1px solid rgba(255,255,255,0.08)',
-                background: 'rgba(255,255,255,0.03)',
-                color: TEXT2,
-                cursor: 'pointer',
-                padding: '10px 16px',
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 12,
-                fontWeight: 700,
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              style={{
-                borderRadius: 10,
-                border: 'none',
-                background: 'linear-gradient(135deg, #7c5af6, #5a2fd4)',
-                color: '#fff',
-                cursor: 'pointer',
-                padding: '10px 18px',
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 12,
-                fontWeight: 800,
-                boxShadow: '0 10px 24px rgba(124,90,246,0.24)',
-              }}
-            >
-              {editingQuestion ? 'Save Changes' : 'Add to Bank'}
-            </button>
-          </div>
+            )
+          })}
         </div>
-      </Modal>
+      )}
+
+      {/* Review Panel */}
+      {selectedTest && (
+        <TestReviewPanel
+          test={selectedTest}
+          onClose={() => setSelectedTestId(null)}
+          onExport={handleExportTest}
+        />
+      )}
     </div>
   )
 }

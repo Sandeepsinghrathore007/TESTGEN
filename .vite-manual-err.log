@@ -1,0 +1,489 @@
+Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[2m6:49:19 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\src\App.jsx: 'return' outside of function. (12:2)
+
+[0m [90m 10 |[31m   )[33m;[31m
+ [90m 11 |[31m
+[31m[1m>[22m[31m[90m 12 |[31m   [36mreturn[31m matchedPage[33m?[31m[33m.[31m[[35m0[31m] [33m||[31m [33mDEFAULT_PAGE[31m[33m;[31m
+ [90m    |[31m   [31m[1m^[22m[31m
+ [90m 13 |[31m }
+ [90m 14 |[31m
+ [90m 15 |[31m [36mfunction[31m syncPageHash(page[33m,[31m { replace [33m=[31m [36mfalse[31m } [33m=[31m {}) {[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:12:2
+[33m  10 |    );
+  11 |  
+  12 |    return matchedPage?.[0] || DEFAULT_PAGE;
+     |         ^
+  13 |  }
+  14 |  [39m
+      at constructor (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.parseReturnStatement (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:13136:12)
+      at JSXParserMixin.parseStatementContent (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseModuleItem (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12744:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:13316:36)
+      at JSXParserMixin.parseBlockBody (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseProgram (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12622:10)
+      at JSXParserMixin.parseTopLevel (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12612:25)
+      at JSXParserMixin.parse (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14488:25)
+      at parse (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14522:38)
+      at parser (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:261:32)
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:223:11)
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:189:28
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:113:33
+      at step (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:287:14)
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:223:11)
+[2m6:49:30 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:49:52 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:49:52 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:50:13 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:50:13 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:51:14 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:51:14 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:51:31 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:51:32 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:53:13 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:53:13 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:53:46 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:53:47 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:53:59 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:53:59 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:54:15 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:54:15 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:54:26 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:54:26 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:54:40 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+[2m6:54:40 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:54:49 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:54:49 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:55:22 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?
+[2m6:55:22 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/components/subjects/SubjectFormModal" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:29
+[33m  19 |  import Sidebar from "@/components/layout/Sidebar";
+  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import SubjectFormModal from "@/components/subjects/SubjectFormModal";
+     |                                ^
+  22 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  23 |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:55:32 pm[22m [31m[1m[vite][22m[39m Pre-transform error: C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\src\App.jsx: Identifier 'TopBar' has already been declared. (4:7)
+
+[0m [90m 2 |[39m [36mimport[39m [33mSidebar[39m [36mfrom[39m [32m"@/components/layout/Sidebar"[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m [33mTopBar[39m [36mfrom[39m [32m"@/components/layout/TopBar"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m [33mTopBar[39m [36mfrom[39m [32m"@/components/layout/TopBar"[39m[33m;[39m
+ [90m   |[39m        [31m[1m^[22m[39m
+ [90m 5 |[39m [36mimport[39m { useRuntimePerformanceMode } [36mfrom[39m [32m"@/hooks/useRuntimePerformanceMode"[39m[33m;[39m
+ [90m 6 |[39m [36mimport[39m { useSubjects } [36mfrom[39m [32m"@/hooks/useSubjects"[39m[33m;[39m
+ [90m 7 |[39m [36mimport[39m { usePWAInstallPrompt } [36mfrom[39m [32m"@/hooks/usePWAInstallPrompt"[39m[33m;[39m[0m
+[2m6:55:32 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\src\App.jsx: Identifier 'TopBar' has already been declared. (4:7)
+
+[0m [90m 2 |[31m [36mimport[31m [33mSidebar[31m [36mfrom[31m [32m"@/components/layout/Sidebar"[31m[33m;[31m
+ [90m 3 |[31m [36mimport[31m [33mTopBar[31m [36mfrom[31m [32m"@/components/layout/TopBar"[31m[33m;[31m
+[31m[1m>[22m[31m[90m 4 |[31m [36mimport[31m [33mTopBar[31m [36mfrom[31m [32m"@/components/layout/TopBar"[31m[33m;[31m
+ [90m   |[31m        [31m[1m^[22m[31m
+ [90m 5 |[31m [36mimport[31m { useRuntimePerformanceMode } [36mfrom[31m [32m"@/hooks/useRuntimePerformanceMode"[31m[33m;[31m
+ [90m 6 |[31m [36mimport[31m { useSubjects } [36mfrom[31m [32m"@/hooks/useSubjects"[31m[33m;[31m
+ [90m 7 |[31m [36mimport[31m { usePWAInstallPrompt } [36mfrom[31m [32m"@/hooks/usePWAInstallPrompt"[31m[33m;[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:4:7
+[33m  2  |  import Sidebar from "@/components/layout/Sidebar";
+  3  |  import TopBar from "@/components/layout/TopBar";
+  4  |  import TopBar from "@/components/layout/TopBar";
+     |            ^
+  5  |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  6  |  import { useSubjects } from "@/hooks/useSubjects";[39m
+      at constructor (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:6599:19)
+      at ScopeHandler.checkRedeclarationInScope (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:1619:19)
+      at ScopeHandler.declareName (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:1585:12)
+      at JSXParserMixin.declareNameFromIdentifier (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:7567:16)
+      at JSXParserMixin.checkIdentifier (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:7563:12)
+      at JSXParserMixin.checkLVal (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:7500:12)
+      at JSXParserMixin.finishImportSpecifier (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14266:10)
+      at JSXParserMixin.parseImportSpecifierLocal (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14263:31)
+      at JSXParserMixin.maybeParseDefaultImportSpecifier (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14366:12)
+      at JSXParserMixin.parseImportSpecifiersAndAfter (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14239:29)
+      at JSXParserMixin.parseImport (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14235:17)
+      at JSXParserMixin.parseStatementContent (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12876:27)
+      at JSXParserMixin.parseStatementLike (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseModuleItem (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12744:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:13316:36)
+      at JSXParserMixin.parseBlockBody (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseProgram (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12622:10)
+      at JSXParserMixin.parseTopLevel (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:12612:25)
+      at JSXParserMixin.parse (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14488:25)
+      at parse (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\parser\lib\index.js:14522:38)
+      at parser (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:261:32)
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:223:11)
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:189:28
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:113:33
+      at step (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:287:14)
+      at C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (C:\Users\Sandeep Rathore\Desktop\Learnledger\Learnledger\node_modules\gensync\index.js:223:11)
+[2m6:55:39 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/hooks/useSubjects" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:6:28
+[33m  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  22 |  import { useSubjects } from "@/hooks/useSubjects";
+     |                               ^
+  23 |  import { usePWAInstallPrompt } from "@/hooks/usePWAInstallPrompt";
+  24 |  import { NAV_ITEMS } from "@/constants/navigation";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 7)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+[2m6:55:39 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/hooks/useSubjects" from "src/App.jsx". Does the file exist?
+[2m6:55:55 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/hooks/useSubjects" from "src/App.jsx". Does the file exist?
+[2m6:55:55 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/hooks/useSubjects" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:6:28
+[33m  20 |  import TopBar from "@/components/layout/TopBar";
+  21 |  import { useRuntimePerformanceMode } from "@/hooks/useRuntimePerformanceMode";
+  22 |  import { useSubjects } from "@/hooks/useSubjects";
+     |                               ^
+  23 |  import { usePWAInstallPrompt } from "@/hooks/usePWAInstallPrompt";
+  24 |  import { NAV_ITEMS } from "@/constants/navigation";[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 7)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:56:53 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/pages/SubjectsPage" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:42:39
+[33m  59 |  const PAGE_IDS = Object.keys(PAGE_HASHES);
+  60 |  _c = PAGE_IDS;
+  61 |  const SubjectsPage = lazy(_c2 = () => import("@/pages/SubjectsPage"));
+     |                                               ^
+  62 |  _c3 = SubjectsPage;
+  63 |  const NotesPage = lazy(_c4 = () => import("@/pages/NotesPage"));[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 12)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+[2m6:56:53 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/pages/SubjectsPage" from "src/App.jsx". Does the file exist?
+[2m6:57:07 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/pages/SubjectsPage" from "src/App.jsx". Does the file exist?
+[2m6:57:07 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/pages/SubjectsPage" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:42:39
+[33m  59 |  const PAGE_IDS = Object.keys(PAGE_HASHES);
+  60 |  _c = PAGE_IDS;
+  61 |  const SubjectsPage = lazy(_c2 = () => import("@/pages/SubjectsPage"));
+     |                                               ^
+  62 |  _c3 = SubjectsPage;
+  63 |  const NotesPage = lazy(_c4 = () => import("@/pages/NotesPage"));[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 12)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m6:57:31 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/pages/SubjectsPage" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:42:39
+[33m  59 |  const PAGE_IDS = Object.keys(PAGE_HASHES);
+  60 |  _c = PAGE_IDS;
+  61 |  const SubjectsPage = lazy(_c2 = () => import("@/pages/SubjectsPage"));
+     |                                               ^
+  62 |  _c3 = SubjectsPage;
+  63 |  const NotesPage = lazy(_c4 = () => import("@/pages/NotesPage"));[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 12)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+[2m6:57:31 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/pages/SubjectsPage" from "src/App.jsx". Does the file exist?
+[2m6:57:39 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "@/pages/SubjectsPage" from "src/App.jsx". Does the file exist?
+[2m6:57:40 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/pages/SubjectsPage" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/App.jsx[39m:42:39
+[33m  59 |  const PAGE_IDS = Object.keys(PAGE_HASHES);
+  60 |  _c = PAGE_IDS;
+  61 |  const SubjectsPage = lazy(_c2 = () => import("@/pages/SubjectsPage"));
+     |                                               ^
+  62 |  _c3 = SubjectsPage;
+  63 |  const NotesPage = lazy(_c4 = () => import("@/pages/NotesPage"));[39m
+      at TransformPluginContext._formatError (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 12)
+      at async TransformPluginContext.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/Sandeep%20Rathore/Desktop/Learnledger/Learnledger/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m7:03:19 pm[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to load url /src/hooks/useSubjects.js (resolved id: C:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/hooks/useSubjects.js) in C:/Users/Sandeep Rathore/Desktop/Learnledger/Learnledger/src/styles/global.css. Does the file exist?

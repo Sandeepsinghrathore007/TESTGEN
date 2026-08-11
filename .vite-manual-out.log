@@ -1,0 +1,123 @@
+
+> learnledger@2.0.0 dev
+> vite --host 127.0.0.1 --port 5173 --strictPort
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m1587[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5173[22m/[39m
+[2m1:40:00 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m1:40:10 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m1:40:37 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m1:40:47 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m1:42:29 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m1:49:29 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:12:45 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:12:57 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:13:13 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:13:45 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:14:20 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:14:31 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:14:48 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:15:20 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/utils/testGeneration.js[22m
+[2m2:30:29 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:30:36 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m2:31:34 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/utils/testGeneration.js[22m
+[2m2:31:42 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/utils/testGeneration.js[22m
+[2m2:32:28 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/services/aiService.js[22m
+[2m3:13:24 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:13:39 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:13:50 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m3:14:02 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/utils/testIntent.test.js[22m
+[2m3:14:25 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:45:11 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:45:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:45:27 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:45:45 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:45:52 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:46:01 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m3:46:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m4:11:46 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:11:53 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:12:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:12:29 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:13:00 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:13:16 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:33:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx[22m
+[2m4:33:44 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/QuestionBankPage.jsx, /src/pages/MockTestsPage.jsx[22m
+[2m4:34:03 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:34:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:34:24 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:41:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx, /src/pages/QuestionBankPage.jsx[22m
+[2m4:42:27 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:42:34 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:42:43 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:43:44 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:43:52 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:43:57 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:44:10 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:44:22 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:44:34 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx, /src/pages/QuestionBankPage.jsx[22m
+[2m4:44:51 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:44:59 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:45:13 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:45:19 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:45:25 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:45:55 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:46:47 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:47:04 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:48:24 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/MockTestsPage.jsx, /src/pages/QuestionBankPage.jsx[22m
+[2m4:48:30 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m4:48:36 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m4:49:16 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m5:10:50 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx, /src/styles/global.css[22m
+[2m5:11:08 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:44:50 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:45:24 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:46:02 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:46:28 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx[22m
+[2m6:46:47 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/MockTestsPage.jsx[22m
+[2m6:47:22 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:48:38 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:48:38 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:48:51 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:49:19 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/styles/global.css[22m
+[2m6:49:30 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/styles/global.css[22m
+[2m6:49:52 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/App.jsx[22m
+[2m6:50:13 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/components/layout/Sidebar.jsx[22m
+[2m6:51:14 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/TestsPage.jsx[22m
+[2m6:51:31 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m6:53:12 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m6:53:46 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m6:53:59 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m6:54:14 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mvite.config.js.timestamp-1786454654766-63f06b54e7549.mjs[22m
+[2m6:54:26 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mvite.config.js.timestamp-1786454666129-29cae5863c7b78.mjs[22m
+[2m6:54:39 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/AIPage.jsx[22m
+[2m6:54:49 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mvite.config.js.timestamp-1786454689264-9c29f1d2a2344.mjs[22m
+[2m6:55:22 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mvite.config.js.timestamp-1786454722323-b8912ae1bd11d8.mjs[22m
+[2m6:55:31 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/App.jsx[22m
+[2m6:55:38 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/App.jsx[22m
+[2m6:55:54 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mvite.config.js.timestamp-1786454754670-c795dfbcb952.mjs[22m
+[2m6:56:52 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/hooks/useSubjects.js[22m
+[2m6:57:07 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mvite.config.js.timestamp-1786454827522-3da207818826e.mjs[22m
+[2m6:57:30 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mvite.config.js.timestamp-1786454850782-01ef4fdc1426.mjs[22m
+[2m6:57:39 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mmock-pages.js[22m
+[2m6:58:07 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mmock-pages.cjs[22m
+[2m6:58:08 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/ComingSoonPage.jsx[22m
+[2m6:58:08 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/ExamsPage.jsx[22m
+[2m6:58:08 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/LoginPage.jsx[22m
+[2m6:58:08 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/pages/SignupPage.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:03:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:30:06 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/styles/global.css[22m
+[2m7:30:59 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/App.jsx[22m
+[2m7:32:13 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/styles/global.css[22m
+[2m7:33:47 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/QuestionBankPage.jsx, /src/styles/global.css[22m
+[2m7:36:03 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/pages/QuestionBankPage.jsx[22m

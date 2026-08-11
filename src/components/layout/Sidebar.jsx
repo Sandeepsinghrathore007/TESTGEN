@@ -21,25 +21,11 @@ const NAV_ICONS = {
 const DESKTOP_SIDEBAR_WIDTH = 228
 const DESKTOP_COLLAPSED_WIDTH = 68
 
-function getUserInitial(user) {
-  const source = user?.displayName || user?.email || 'User'
-  return source.trim().charAt(0).toUpperCase()
-}
-
-function getUserLabel(user) {
-  if (!user) return 'Guest User'
-  return user.displayName || user.email || 'User'
-}
-
 function Sidebar({
   collapsed,
   setCollapsed,
   activePage,
   setActivePage,
-  onOpenLogin = () => {},
-  onOpenSignup = () => {},
-  onLogout = () => {},
-  user = null,
   isMobile = false,
   mobileOpen = false,
   ultraLite = false,
@@ -54,7 +40,6 @@ function Sidebar({
   const transform = isMobile
     ? (mobileOpen ? 'translate3d(0,0,0)' : 'translate3d(calc(-100% - 14px),0,0)')
     : 'translate3d(0,0,0)'
-  const userInitial = getUserInitial(user)
   const itemTransition = ultraLite
     ? 'background 0.12s ease, color 0.12s ease'
     : 'background 0.16s ease, color 0.16s ease'
@@ -107,7 +92,7 @@ function Sidebar({
           color: '#fff',
           boxShadow: 'var(--ll-shadow-soft)',
         }}>
-          {userInitial}
+          L
         </div>
         {!isCompact && (
           <div style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}>
@@ -212,188 +197,13 @@ function Sidebar({
 
       <div style={{ padding: '9px 6px', borderTop: `1px solid ${BORDER}` }}>
         <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '7px',
-          borderRadius: '9px',
-          justifyContent: isCompact ? 'center' : 'flex-start',
+          color: TEXT3,
+          fontSize: '10px',
+          fontFamily: "'DM Sans',sans-serif",
+          letterSpacing: '0.2px',
         }}>
-          <div style={{
-            width: '28px',
-            height: '28px',
-            flexShrink: 0,
-            borderRadius: '50%',
-            background: BUTTON_GRADIENT,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontSize: '12px',
-            fontWeight: '700',
-          }}>
-            {userInitial}
-          </div>
-          {!isCompact && (
-            <div style={{ minWidth: 0 }}>
-              <div style={{
-                color: TEXT1,
-                fontSize: '12.5px',
-                fontWeight: '600',
-                fontFamily: "'DM Sans',sans-serif",
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}>
-                {getUserLabel(user)}
-              </div>
-              <div style={{
-                color: TEXT3,
-                fontSize: '10px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}>
-                {user ? 'Firebase session active' : 'Not logged in'}
-              </div>
-            </div>
-          )}
+          Local mode
         </div>
-
-        {!isCompact ? (
-          user ? (
-            <button
-              type="button"
-              onClick={() => {
-                onLogout()
-                if (isMobile) setMobileOpen(false)
-              }}
-              style={{
-                width: '100%',
-                marginTop: '7px',
-                border: `1px solid ${BORDER2}`,
-                background: 'rgba(239,68,68,0.1)',
-                color: '#fca5a5',
-                borderRadius: '8px',
-                padding: '8px 9px',
-                fontSize: '11.5px',
-                fontWeight: '700',
-                fontFamily: "'DM Sans',sans-serif",
-              }}
-            >
-              Logout
-            </button>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginTop: '7px' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  onOpenLogin()
-                  if (isMobile) setMobileOpen(false)
-                }}
-                style={{
-                  border: `1px solid ${BORDER2}`,
-                  background: 'var(--ll-accent-soft)',
-                  color: TEXT1,
-                  borderRadius: '8px',
-                  padding: '8px 9px',
-                  fontSize: '11.5px',
-                  fontWeight: '700',
-                  fontFamily: "'DM Sans',sans-serif",
-                }}
-              >
-                Login
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onOpenSignup()
-                  if (isMobile) setMobileOpen(false)
-                }}
-                style={{
-                  border: `1px solid ${BORDER2}`,
-                  background: BUTTON_GRADIENT,
-                  color: '#ffffff',
-                  borderRadius: '8px',
-                  padding: '8px 9px',
-                  fontSize: '11.5px',
-                  fontWeight: '700',
-                  fontFamily: "'DM Sans',sans-serif",
-                }}
-              >
-                Sign Up
-              </button>
-            </div>
-          )
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '7px' }}>
-            {user ? (
-              <button
-                type="button"
-                title="Logout"
-                onClick={() => {
-                  onLogout()
-                  if (isMobile) setMobileOpen(false)
-                }}
-                style={{
-                  border: `1px solid ${BORDER2}`,
-                  background: 'rgba(239,68,68,0.12)',
-                  color: '#fca5a5',
-                  borderRadius: '8px',
-                  padding: '7px 0',
-                  fontSize: '10px',
-                  fontWeight: '700',
-                  fontFamily: "'DM Sans',sans-serif",
-                }}
-              >
-                Out
-              </button>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  title="Login"
-                  onClick={() => {
-                    onOpenLogin()
-                    if (isMobile) setMobileOpen(false)
-                  }}
-                  style={{
-                    border: `1px solid ${BORDER2}`,
-                    background: 'var(--ll-accent-soft)',
-                    color: TEXT1,
-                    borderRadius: '8px',
-                    padding: '7px 0',
-                    fontSize: '10px',
-                    fontWeight: '700',
-                    fontFamily: "'DM Sans',sans-serif",
-                  }}
-                >
-                  Log
-                </button>
-                <button
-                  type="button"
-                  title="Sign Up"
-                  onClick={() => {
-                    onOpenSignup()
-                    if (isMobile) setMobileOpen(false)
-                  }}
-                  style={{
-                    border: `1px solid ${BORDER2}`,
-                    background: BUTTON_GRADIENT,
-                    color: '#ffffff',
-                    borderRadius: '8px',
-                    padding: '7px 0',
-                    fontSize: '10px',
-                    fontWeight: '700',
-                    fontFamily: "'DM Sans',sans-serif",
-                  }}
-                >
-                  Up
-                </button>
-              </>
-            )}
-          </div>
-        )}
       </div>
 
       {!isMobile && (

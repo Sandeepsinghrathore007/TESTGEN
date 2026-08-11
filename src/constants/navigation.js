@@ -7,30 +7,12 @@
 
 export const NAV_ITEMS = [
   {
-    id: 'subjects',
-    label: 'Subjects',
-    icon: 'subjects',
-    iconColor: '#38bdf8',
-    iconBg: 'rgba(56,189,248,0.14)',
-    iconBorder: 'rgba(56,189,248,0.28)',
-    comingSoon: false,
-  },
-  {
-    id: 'questions',
+    id: 'tests',
     label: 'Tests',
     icon: 'tests',
     iconColor: '#fb7185',
     iconBg: 'rgba(251,113,133,0.14)',
     iconBorder: 'rgba(251,113,133,0.28)',
-    comingSoon: false,
-  },
-  {
-    id: 'exams',
-    label: 'Mock Tests',
-    icon: 'tests',
-    iconColor: '#22c55e',
-    iconBg: 'rgba(34,197,94,0.14)',
-    iconBorder: 'rgba(34,197,94,0.28)',
     comingSoon: false,
   },
   {
@@ -42,19 +24,10 @@ export const NAV_ITEMS = [
     iconBorder: 'rgba(245,158,11,0.28)',
     comingSoon: false,
   },
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    icon: 'analytics',
-    iconColor: '#34d399',
-    iconBg: 'rgba(52,211,153,0.14)',
-    iconBorder: 'rgba(52,211,153,0.28)',
-    comingSoon: false,
-  },
 ]
 
-// Description text for coming-soon placeholder pages
 export const PAGE_DESCRIPTIONS = {
-  analytics: 'Track streaks, performance, and AI-driven study progress',
-  questions: 'AI-generated MCQs from your notes',
+  tests: 'Import and validate offline JSON tests',
+  questionBank: 'Saved AI tests',
 }
+

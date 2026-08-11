@@ -3,9 +3,9 @@
  */
 
 import { useEffect, useState } from 'react'
-import { analyzeWeakAreas, calculateAccuracyByDifficulty, formatTime } from '@/utils/testScoring'
-import PerformanceChart from '@/components/tests/PerformanceChart'
+import { formatTime } from '@/utils/testScoring'
 import { BORDER, TEXT1, TEXT2, TEXT3 } from '@/constants/theme'
+import { formatTestAsTxt, formatTestResultsOnlyAsTxt, downloadTxtFile } from '@/utils/exportTest'
 
 function getResolvedCorrectAnswer(question, explanationItem = null) {
   return String(explanationItem?.correctAnswer || question?.correctAnswer || '').trim().toLowerCase()
@@ -78,6 +78,7 @@ export default function TestResultsView({
   onRetake = null,
   closeLabel = 'Back to Tests',
   onTakeWeakAreaMockTest = null,
+  onExport = null,
 }) {
   const [expandedQuestions, setExpandedQuestions] = useState(new Set())
 
@@ -155,12 +156,21 @@ export default function TestResultsView({
     setExpandedQuestions(newExpanded)
   }
 
-  const weakAreas = analyzeWeakAreas(questions, answers, metadata)
-  const accuracyByDifficulty = calculateAccuracyByDifficulty(questions, answers)
   const bookmarkedQuestionItems = questions
     .map((question, index) => ({ question, index }))
     .filter(({ question }) => bookmarkedQuestions.includes(question.id))
-  const weakestTopic = weakAreas.weakAreas[0] || null
+
+  const handleExportTest = () => {
+    if (typeof onExport === 'function') {
+      onExport(testAttempt)
+      return
+    }
+    const txt = formatTestResultsOnlyAsTxt(testAttempt)
+    const filename = String(testAttempt?.topic || testAttempt?.title || 'test-results')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+    downloadTxtFile(txt, filename)
+  }
 
   useEffect(() => {
     setExpandedQuestions(new Set())
@@ -276,116 +286,7 @@ export default function TestResultsView({
         )}
       </div>
 
-      {/* Performance Chart */}
-      {!isUngradedAttempt && weakAreas.allTopics.length > 0 && (
-        <PerformanceChart
-          accuracyByDifficulty={accuracyByDifficulty}
-          topicPerformance={weakAreas.allTopics}
-          weakAreas={weakAreas.weakAreas}
-        />
-      )}
 
-      {!isUngradedAttempt && (weakAreas.weakSubjects.length > 0 || weakAreas.weakAreas.length > 0) && (
-        <div
-          style={{
-            marginTop: '24px',
-            background: 'rgba(255,255,255,0.02)',
-            border: `1px solid ${BORDER}`,
-            borderRadius: '14px',
-            padding: '18px',
-          }}
-        >
-          <div style={{ color: TEXT1, fontFamily: "'DM Sans', sans-serif", fontSize: '16px', fontWeight: '700' }}>
-            Weak Areas Detected
-          </div>
-          <p style={{ color: TEXT3, fontFamily: "'DM Sans', sans-serif", fontSize: '12px', margin: '6px 0 0', lineHeight: 1.6 }}>
-            Focus on the lowest-performing subjects and topics before your next attempt.
-          </p>
-
-          {weakAreas.weakSubjects.length > 0 && (
-            <div style={{ marginTop: '14px' }}>
-              <div style={{ color: TEXT2, fontFamily: "'DM Sans', sans-serif", fontSize: '12px', fontWeight: '700', marginBottom: '8px' }}>
-                Weak Subjects
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {weakAreas.weakSubjects.map((subject) => (
-                  <span
-                    key={subject.subjectId || subject.subjectName}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      borderRadius: '999px',
-                      padding: '6px 10px',
-                      background: 'rgba(239,68,68,0.1)',
-                      border: '1px solid rgba(239,68,68,0.2)',
-                      color: '#fca5a5',
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: '11px',
-                      fontWeight: '700',
-                    }}
-                  >
-                    {subject.subjectName}
-                    <span style={{ color: TEXT3 }}>{subject.percentage}%</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {weakAreas.weakAreas.length > 0 && (
-            <div style={{ marginTop: '14px' }}>
-              <div style={{ color: TEXT2, fontFamily: "'DM Sans', sans-serif", fontSize: '12px', fontWeight: '700', marginBottom: '8px' }}>
-                Weak Topics
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {weakAreas.weakAreas.map((topic) => (
-                  <span
-                    key={topic.topicId}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      borderRadius: '999px',
-                      padding: '6px 10px',
-                      background: 'rgba(245,158,11,0.1)',
-                      border: '1px solid rgba(245,158,11,0.22)',
-                      color: '#fbbf24',
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: '11px',
-                      fontWeight: '700',
-                    }}
-                  >
-                    {topic.topicName}
-                    <span style={{ color: TEXT3 }}>{topic.percentage}%</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {typeof onTakeWeakAreaMockTest === 'function' && weakestTopic?.topicId && weakestTopic?.subjectId && (
-            <button
-              type="button"
-              onClick={() => onTakeWeakAreaMockTest(weakestTopic)}
-              style={{
-                marginTop: '16px',
-                padding: '11px 14px',
-                border: 'none',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-                color: '#fff',
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '12px',
-                fontWeight: '800',
-                cursor: 'pointer',
-              }}
-            >
-              Take Test for Weak Topic: {weakestTopic.topicName}
-            </button>
-          )}
-        </div>
-      )}
 
       {/* Questions Review */}
       <div style={{ marginTop: '24px' }}>
@@ -697,6 +598,23 @@ export default function TestResultsView({
           }}
         >
           {closeLabel}
+        </button>
+        <button
+          type="button"
+          onClick={handleExportTest}
+          style={{
+            padding: '12px 20px',
+            background: 'rgba(14,165,233,0.12)',
+            border: '1px solid rgba(14,165,233,0.3)',
+            borderRadius: '10px',
+            color: '#38bdf8',
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer',
+          }}
+        >
+          ↓ Export Test
         </button>
         {typeof onRetake === 'function' && (
           <button

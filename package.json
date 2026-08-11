@@ -8,17 +8,19 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext .js,.jsx"
+    "lint": "eslint src --ext .js,.jsx",
+    "test:intent": "node --test src/utils/testIntent.test.js"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.6",
     "@tiptap/pm": "^3.20.1",
     "@tiptap/react": "^3.20.1",
     "@tiptap/starter-kit": "^3.20.1",
-    "firebase": "^12.10.0",
+    "omniroute": "^3.8.49",
     "pdfjs-dist": "^5.5.207",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.1",
