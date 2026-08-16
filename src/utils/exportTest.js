@@ -498,3 +498,101 @@ export function formatTestResultsOnlyAsTxt(test) {
 
   return lines.join('\n')
 }
+
+/**
+ * Format only wrong and skipped questions for quick clipboard copy.
+ *
+ * @param {Object} test — Test object with questions, answers, etc.
+ * @returns {string} — Formatted text string containing only mistakes & explanations
+ */
+export function formatWrongAnswersForClipboard(test) {
+  if (!test) return ''
+
+  const title = safeStr(test.topic || test.title || test.name || 'LearnLedger Test')
+  const questions = Array.isArray(test.questions) ? test.questions : []
+  const answers = test.answers && typeof test.answers === 'object' ? test.answers : {}
+  const reviewExplanations = (
+    test.reviewExplanations && typeof test.reviewExplanations === 'object'
+      ? test.reviewExplanations
+      : {}
+  )
+
+  const wrongOrSkipped = []
+
+  questions.forEach((q, index) => {
+    const questionNumber = q.questionNumber || index + 1
+    const userAnswer = answers[q.id] || null
+    const explanationItem = reviewExplanations[q.id] || null
+    const correctAnswer = String(explanationItem?.correctAnswer || q.correctAnswer || '').trim().toLowerCase()
+
+    const hasKey = ['a', 'b', 'c', 'd'].includes(correctAnswer)
+    if (!hasKey) return
+
+    const isCorrect = userAnswer && String(userAnswer).toLowerCase() === correctAnswer
+    if (!isCorrect) {
+      wrongOrSkipped.push({
+        q,
+        questionNumber,
+        userAnswer,
+        correctAnswer,
+        isSkipped: !userAnswer,
+        explanation: String(explanationItem?.explanation || q.explanation || '').trim()
+      })
+    }
+  })
+
+  if (wrongOrSkipped.length === 0) {
+    return `🎉 Perfect Score! There are no wrong answers in "${title}". (Score: 100%)`
+  }
+
+  const lines = []
+  lines.push(SEPARATOR)
+  lines.push(`${title.toUpperCase()} — WRONG ANSWERS REVIEW`)
+  lines.push(`Total Mistakes / Unattempted: ${wrongOrSkipped.length}`)
+  lines.push(SEPARATOR)
+
+  wrongOrSkipped.forEach((item, idx) => {
+    const { q, questionNumber, userAnswer, correctAnswer, isSkipped, explanation } = item
+    lines.push('')
+    lines.push(`Q${questionNumber}. ${safeStr(q.question || q.prompt || q.questionText)}`)
+    lines.push('')
+
+    const options = Array.isArray(q.options) ? q.options : []
+    if (options.length > 0) {
+      options.forEach((opt) => {
+        lines.push(`  ${optionLabel(opt.id)}. ${safeStr(opt.text)}`)
+      })
+      lines.push('')
+    }
+
+    if (isSkipped) {
+      lines.push(`Your Answer: (Not Attempted / Skipped)`)
+    } else {
+      lines.push(`Your Answer: ${optionLabel(userAnswer)} — ${getOptionText(q, userAnswer)}`)
+    }
+
+    lines.push(`Correct Answer: ${optionLabel(correctAnswer)} — ${getOptionText(q, correctAnswer)}`)
+
+    if (explanation) {
+      lines.push('')
+      lines.push('Explanation:')
+      const cleanedExplanation = explanation
+        .replace(/\\n/g, '\n')
+        .replace(/\\t/g, '  ')
+        .split('\n')
+        .map((line) => `  ${line.trim()}`)
+        .join('\n')
+      lines.push(cleanedExplanation)
+    }
+
+    if (idx < wrongOrSkipped.length - 1) {
+      lines.push('')
+      lines.push(SECTION_SEP)
+    }
+  })
+
+  lines.push('')
+  lines.push(SEPARATOR)
+  return lines.join('\n')
+}
+

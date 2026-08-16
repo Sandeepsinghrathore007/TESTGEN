@@ -5,7 +5,8 @@
 import { useEffect, useState } from 'react'
 import { formatTime } from '@/utils/testScoring'
 import { BORDER, TEXT1, TEXT2, TEXT3 } from '@/constants/theme'
-import { formatTestAsTxt, formatTestResultsOnlyAsTxt, downloadTxtFile } from '@/utils/exportTest'
+import { formatTestAsTxt, formatTestResultsOnlyAsTxt, formatWrongAnswersForClipboard, downloadTxtFile } from '@/utils/exportTest'
+import { CopyIcon, CheckIcon } from '@/components/ui/Icons'
 
 function getResolvedCorrectAnswer(question, explanationItem = null) {
   return String(explanationItem?.correctAnswer || question?.correctAnswer || '').trim().toLowerCase()
@@ -81,6 +82,7 @@ export default function TestResultsView({
   onExport = null,
 }) {
   const [expandedQuestions, setExpandedQuestions] = useState(new Set())
+  const [isCopiedWrongAnswers, setIsCopiedWrongAnswers] = useState(false)
 
   const { 
     title, 
@@ -160,16 +162,26 @@ export default function TestResultsView({
     .map((question, index) => ({ question, index }))
     .filter(({ question }) => bookmarkedQuestions.includes(question.id))
 
-  const handleExportTest = () => {
-    if (typeof onExport === 'function') {
-      onExport(testAttempt)
-      return
+  const handleCopyWrongAnswers = async () => {
+    try {
+      const textToCopy = formatWrongAnswersForClipboard(testAttempt)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(textToCopy)
+      } else {
+        const textarea = document.createElement('textarea')
+        textarea.value = textToCopy
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+      }
+      setIsCopiedWrongAnswers(true)
+      setTimeout(() => setIsCopiedWrongAnswers(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy wrong answers:', err)
     }
-    const txt = formatTestResultsOnlyAsTxt(testAttempt)
-    const filename = String(testAttempt?.topic || testAttempt?.title || 'test-results')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-    downloadTxtFile(txt, filename)
   }
 
   useEffect(() => {
@@ -601,20 +613,29 @@ export default function TestResultsView({
         </button>
         <button
           type="button"
-          onClick={handleExportTest}
+          onClick={handleCopyWrongAnswers}
+          title="Copy all incorrect and skipped questions with explanations to clipboard"
           style={{
             padding: '12px 20px',
-            background: 'rgba(14,165,233,0.12)',
-            border: '1px solid rgba(14,165,233,0.3)',
+            background: isCopiedWrongAnswers ? 'rgba(34, 197, 94, 0.16)' : 'rgba(239, 68, 68, 0.12)',
+            border: isCopiedWrongAnswers ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(239, 68, 68, 0.3)',
             borderRadius: '10px',
-            color: '#38bdf8',
+            color: isCopiedWrongAnswers ? '#4ade80' : '#f87171',
             fontFamily: "'DM Sans', sans-serif",
             fontSize: '13px',
             fontWeight: '600',
             cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 7,
+            transition: 'all 0.2s ease',
           }}
         >
-          ↓ Export Test
+          <span style={{ width: 15, height: 15, display: 'inline-flex', alignItems: 'center' }}>
+            {isCopiedWrongAnswers ? <CheckIcon /> : <CopyIcon />}
+          </span>
+          {isCopiedWrongAnswers ? 'Wrong Answers Copied!' : 'Copy Wrong Answers'}
         </button>
         {typeof onRetake === 'function' && (
           <button

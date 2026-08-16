@@ -16,6 +16,8 @@ import { attachStructuredResultContext, buildResultSummaryMessage } from '@/util
 import TestTakingView from '@/components/tests/TestTakingView'
 import TestResultsView from '@/components/tests/TestResultsView'
 import { formatTestAsTxt, formatTestResultsOnlyAsTxt, downloadTxtFile } from '@/utils/exportTest'
+import { CopyIcon, CheckIcon, UploadIcon } from '@/components/ui/Icons'
+import { OFFLINE_TEST_GENERATION_PROMPT } from '@/constants/testPrompt'
 
 const FONT = "'Inter', 'DM Sans', sans-serif"
 
@@ -49,6 +51,28 @@ export default function TestsPage() {
 
   const [activeTest, setActiveTest] = useState(null)
   const [viewingResults, setViewingResults] = useState(null)
+  const [isPromptCopied, setIsPromptCopied] = useState(false)
+
+  const handleCopyPrompt = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(OFFLINE_TEST_GENERATION_PROMPT)
+      } else {
+        const textarea = document.createElement('textarea')
+        textarea.value = OFFLINE_TEST_GENERATION_PROMPT
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+      }
+      setIsPromptCopied(true)
+      setTimeout(() => setIsPromptCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy prompt:', err)
+    }
+  }
 
   const parseImportText = (rawText, { jsonOnly = false } = {}) => {
     const text = String(rawText || '').trim()
@@ -301,10 +325,6 @@ export default function TestsPage() {
           setViewingResults(null)
           setActiveTest({ ...viewingResults, status: 'in-progress', answers: {} }) 
         }}
-        onExport={() => { 
-          const txt = formatTestResultsOnlyAsTxt(viewingResults)
-          downloadTxtFile(txt, `${viewingResults.topic || 'test'}-results.txt`) 
-        }} 
       />
     )
   }
@@ -320,7 +340,7 @@ export default function TestsPage() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
         <label style={{
           padding: '10px 18px',
           background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
@@ -335,7 +355,11 @@ export default function TestsPage() {
           alignItems: 'center',
           gap: 6,
           boxShadow: '0 4px 14px rgba(99,102,241,0.35)',
+          userSelect: 'none',
         }}>
+          <span style={{ width: 15, height: 15, display: 'inline-flex', alignItems: 'center' }}>
+            <UploadIcon />
+          </span>
           Upload JSON File
           <input
             type="file"
@@ -344,6 +368,33 @@ export default function TestsPage() {
             style={{ display: 'none' }}
           />
         </label>
+
+        <button
+          type="button"
+          onClick={handleCopyPrompt}
+          title="Copy prompt for generating offline LearnLedger tests with AI"
+          style={{
+            padding: '10px 16px',
+            background: isPromptCopied ? 'rgba(16, 185, 129, 0.16)' : 'rgba(255, 255, 255, 0.06)',
+            border: isPromptCopied ? '1px solid rgba(16, 185, 129, 0.4)' : `1px solid ${BORDER}`,
+            borderRadius: 10,
+            color: isPromptCopied ? '#34d399' : TEXT1,
+            fontFamily: FONT,
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 7,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          <span style={{ width: 15, height: 15, display: 'inline-flex', alignItems: 'center' }}>
+            {isPromptCopied ? <CheckIcon /> : <CopyIcon />}
+          </span>
+          {isPromptCopied ? 'Prompt Copied!' : 'Copy AI Prompt'}
+        </button>
       </div>
 
       <div style={{

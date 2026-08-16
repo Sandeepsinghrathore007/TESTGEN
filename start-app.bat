@@ -3,7 +3,14 @@ setlocal EnableExtensions
 
 rem LearnLedger one-click development launcher for Windows 10+.
 rem Resolve paths relative to this .bat file.
-set "PROJECT_DIR=%~dp0"
+set "LAUNCHER_DIR=%~dp0"
+if exist "%LAUNCHER_DIR%package.json" (
+  set "PROJECT_DIR=%LAUNCHER_DIR%"
+) else if exist "%LAUNCHER_DIR%Learnledger\package.json" (
+  set "PROJECT_DIR=%LAUNCHER_DIR%Learnledger"
+) else (
+  set "PROJECT_DIR=%LAUNCHER_DIR%"
+)
 for %%I in ("%PROJECT_DIR%.") do set "PROJECT_DIR=%%~fI"
 
 set "OMNIROUTE_URL=http://localhost:20128"
